@@ -1,0 +1,23 @@
+﻿  Main.cpp
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:         ]
+  Niti_Bizarre_Adventure.vcxproj -> C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Debug\Niti_Bizarre_Adventure.exe
