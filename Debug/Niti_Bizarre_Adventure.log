@@ -1,23 +1,8 @@
-﻿  Main.cpp
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(91,28): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(94,28): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(97,28): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.h(100,28): warning C4244:         ]
+﻿  Source.cpp
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(20,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(159,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  TextDisplay.cpp
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(158,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  Generating Code...
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\TextDisplay.cpp(8,15): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   Niti_Bizarre_Adventure.vcxproj -> C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Debug\Niti_Bizarre_Adventure.exe
