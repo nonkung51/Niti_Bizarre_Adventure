@@ -12,16 +12,16 @@ void Enemy::update() {
 }
 
 void Enemy::updateMovement() {
-	if (direction == 1) {
+	if (direction == 1 && cantMoveDi != 1) {
 		rect.move({ 0.0f, -movementSpeed });
 		sprite.setTextureRect(sf::IntRect(64 * counterWalking, 64, 64, 64));
-	} else if (direction == 2) {
+	} else if (direction == 2 && cantMoveDi != 2) {
 		rect.move({ 0.0f, movementSpeed });
 		sprite.setTextureRect(sf::IntRect(64 * counterWalking, 64 * 11, 64, 64));
-	} else if (direction == 3) {
+	} else if (direction == 3 && cantMoveDi != 3) {
 		rect.move({ -movementSpeed, 0.0f });
 		sprite.setTextureRect(sf::IntRect(64 * counterWalking, 64 * 11, 64, 64));
-	} else if (direction == 4) {
+	} else if (direction == 4 && cantMoveDi != 4) {
 		rect.move({ movementSpeed, 0.0f });
 		sprite.setTextureRect(sf::IntRect(64 * counterWalking, 64, 64, 64));
 	} else {
@@ -33,8 +33,9 @@ void Enemy::updateMovement() {
 		counterWalking = 0;
 	}
 	counterIdle++;
-	if (counterIdle >= movementLength) {
+	if (counterIdle >= movementLength || cantMoveDi != 0) {
 		direction = generateRandom(10);
 		counterIdle = 0;
+		cantMoveDi = 0;
 	}
 }

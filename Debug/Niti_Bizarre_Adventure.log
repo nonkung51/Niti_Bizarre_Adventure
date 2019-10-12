@@ -1,8 +1,25 @@
-﻿  Source.cpp
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(20,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(159,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-  TextDisplay.cpp
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(158,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+﻿  Main.cpp
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(22,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,56): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,56): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,56): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,56): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,56): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,46): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,46): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,46): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,46): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(89,46): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(108,44): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(108,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(113,58): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(113,32): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(118,48): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(118,27): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(124,61): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(124,40): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(294,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  Wall.cpp
   Generating Code...
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\TextDisplay.cpp(8,15): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Main.cpp(293,19): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   Niti_Bizarre_Adventure.vcxproj -> C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Debug\Niti_Bizarre_Adventure.exe

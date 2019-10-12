@@ -9,7 +9,7 @@ class TextDisplay : public Entity {
 			 TextDisplay();
 		void update();
 	private:
-		int lifeTime = 100;
+		int lifeTime = 20;
 		int counter = 0;
 		int movementSpeed = 3;
 };

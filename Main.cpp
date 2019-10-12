@@ -9,6 +9,8 @@
 #include "Projectile.h"
 #include "Enemy.h"
 #include "TextDisplay.h"
+#include "Pickup.h"
+#include "Wall.h"
 #include "helper.h"
 
 using namespace std;
@@ -24,9 +26,7 @@ int main() {
 	if (!font.loadFromFile("res/font/manaspc.ttf")) {
 		cout << "Hey" << endl;
 	}
-	/*
-	sf::Text t("Hi There", font, 22);
-	
+	/*	
 	sf::Music music;
 	if (!music.openFromFile("res/music/Windless Slopes.mp3")) {
 		cout << "Hey" << endl;
@@ -35,16 +35,29 @@ int main() {
 	//music.play();
 	*/
 
+	sf::Texture textureEnvironment;
+	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
+		cout << "res/img/environment.png not loaded." << endl;
+	}
+
 	sf::Texture texturePlayer;
-	if (!texturePlayer.loadFromFile("res/img/player.png"))
-	{
-		cout << "Hey" << endl;
+	if (!texturePlayer.loadFromFile("res/img/player.png")) {
+		cout << "res/img/player.png not loaded." << endl;
 	}
 
 	sf::Texture textureEnemy;
-	if (!textureEnemy.loadFromFile("res/img/enemy.png"))
-	{
-		cout << "Hey" << endl;
+	if (!textureEnemy.loadFromFile("res/img/enemy.png")) {
+		cout << "res/img/enemy.png not loaded." << endl;
+	}
+
+	sf::Texture textureCoin;
+	if (!textureCoin.loadFromFile("res/img/item.png")) {
+		cout << "res/img/item.png not loaded." << endl;
+	}
+
+	sf::Texture textureFireball;
+	if (!textureFireball.loadFromFile("res/img/fireball.png")) {
+		cout << "res/img/fireball.png not loaded." << endl;
 	}
 
 	Player player;
@@ -52,6 +65,12 @@ int main() {
 
 	vector<Projectile> projectileArray;
 	Projectile projectile;
+	projectile.sprite.setTexture(textureFireball);
+	projectile.sprite.setScale(
+		projectile.sprite.getScale().x / 2,
+		projectile.sprite.getScale().y / 2
+	);
+	projectile.sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
 
 	vector<Enemy> enemyArray;
 	Enemy enemy;
@@ -64,8 +83,98 @@ int main() {
 	TextDisplay textDisplay;
 	textDisplay.text.setFont(font);
 
+	vector<Pickup> pickupArray;
+	Pickup pickup;
+	pickup.sprite.setTexture(textureCoin);
+	pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
+	pickup.rect.setPosition(500, 500);
+	pickupArray.push_back(pickup);
+
+	vector<Wall> wallArray;
+	Wall wall;
+
+	sf::Text coinShow("Coin: ", font, 25);
+	coinShow.setFillColor(sf::Color::Yellow);
+	coinShow.setPosition(0, 0);
+
+	sf::Sprite environment(textureEnvironment);
+
+	int roomSize = generateRandom(10) + 3;
+	int verticalDoorLocation = generateRandom(roomSize);
+	int roomStartX = generateRandom(200) + 100;
+	int roomStartY = generateRandom(200) + 100;
+
+	for (int w=0; w < roomSize; w++) {
+		wall.rect.setPosition(50*w + roomStartX, roomStartY);
+		wallArray.push_back(wall);
+	}
+
+	for (int w = 0; w < roomSize; w++) {
+		wall.rect.setPosition(50 * w + roomStartX, 50*roomSize + roomStartY);
+		wallArray.push_back(wall);
+	}
+
+	for (int w = 0; w < roomSize; w++) {
+		wall.rect.setPosition(0 + roomStartX, 50 * w + roomStartY);
+		wallArray.push_back(wall);
+	}
+
+	for (int w = 0; w < roomSize+1; w++) {
+		if (w != verticalDoorLocation) {
+			wall.rect.setPosition(50 * roomSize + roomStartX, 50 * w + roomStartY);
+			wallArray.push_back(wall);
+		}
+	}
+
 	while (window.isOpen()) {
 		window.clear();
+
+		window.draw(environment);
+
+		//Player collide with wall
+		for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
+			if (player.rect.getGlobalBounds().intersects((*wIt).rect.getGlobalBounds())) {
+				player.cantMoveDi = player.direction;
+				sf::Vector2f bounce[4] = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+				player.rect.move(bounce[player.direction - 1] * player.movementSpeed);
+			}
+		}
+
+		//Projectile collide with wall
+		for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
+			for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
+				if ((*pIt).rect.getGlobalBounds().intersects((*wIt).rect.getGlobalBounds())) {
+					if ((*wIt).destructable) {
+						(*wIt).hp -= (*pIt).attackDamage;
+						if ((*wIt).hp <= 0) {
+							(*wIt).destroyed = true;// destroy wall
+						}
+					}
+					(*pIt).destroyed = true;
+				}
+			}
+		}
+
+		//Enemy collide with wall
+		for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
+			for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
+				if ((*eIt).rect.getGlobalBounds().intersects((*wIt).rect.getGlobalBounds())) {
+					(*eIt).cantMoveDi = (*eIt).direction;
+					sf::Vector2f bounce[4] = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+					(*eIt).rect.move(bounce[(*eIt).direction - 1] * (*eIt).movementSpeed);
+				}
+			}
+		}
+
+		//Player Collide with pickup
+		for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
+			if (player.rect.getGlobalBounds().intersects((*piIt).rect.getGlobalBounds())) {
+				if ((*piIt).isCoin) {
+					player.coin += (*piIt).coinValue;
+					(*piIt).destroyed = true;
+				}
+			}
+		}
 
 		// Enemy attack player
 		sf::Time enemyAttackPlayer = enemyAttackPlayerClock.getElapsedTime();
@@ -88,7 +197,7 @@ int main() {
 			}
 		}
 
-		//Check collision
+		//Check collision attack enemy
 		for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
 			for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 				if ((*pIt).rect.getGlobalBounds().intersects(
@@ -114,6 +223,11 @@ int main() {
 		//Delete dead enemy
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 			if ((*eIt).alive == false) {
+				//random generate coin
+				if (generateRandom(3) == 1) {
+					pickup.rect.setPosition((*eIt).rect.getPosition());
+					pickupArray.push_back(pickup);
+				}
 				enemyArray.erase(eIt);
 				break;
 			}
@@ -131,6 +245,27 @@ int main() {
 		for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
 			if ((*tIt).destroyed) {
 				textDisplayArray.erase(tIt);
+				break;
+			}
+		}
+
+		//Delete Item
+		for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
+			if ((*piIt).destroyed) {
+				pickupArray.erase(piIt);
+				break;
+			}
+		}
+
+		//Delete Destructable wall
+		for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
+			if ((*wIt).destroyed) {
+				//random generate coin
+				if (generateRandom(3) == 1) {
+					pickup.rect.setPosition((*wIt).rect.getPosition());
+					pickupArray.push_back(pickup);
+				}
+				wallArray.erase(wIt);
 				break;
 			}
 		}
@@ -161,10 +296,23 @@ int main() {
 			enemyArray.push_back(enemy);
 		}
 
+		// Draw wall
+		for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
+			window.draw((*wIt).rect);
+		}
+
+		// Draw Pickup item
+		for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
+			(*piIt).update();
+			// window.draw((*piIt).rect);
+			window.draw((*piIt).sprite);
+		}
+
 		//Update Bullet
 		for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
 			(*pIt).update();
-			window.draw((*pIt).rect);
+			window.draw((*pIt).sprite);
+			//window.draw((*pIt).rect);
 		}
 
 		//Update Enemy
@@ -184,6 +332,10 @@ int main() {
 			(*tIt).update();
 			window.draw((*tIt).text);
 		}
+
+		//drawing coin
+		coinShow.setString("Coin : " + to_string(player.coin));
+		window.draw(coinShow);
 
 		window.display();
 	}
