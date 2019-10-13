@@ -13,8 +13,17 @@
 #include "Wall.h"
 #include "helper.h"
 
+#include "Game.h"
+
 using namespace std;
 
+int main() {
+	Game game;
+	game.run();
+	return 0;
+}
+
+/*
 int main() {
 	sf::Clock attackClock, enemyAttackPlayerClock, aggressiveEnemyClock;
 	sf::RenderWindow window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure");
@@ -497,3 +506,4 @@ int main() {
 		window.display();
 	}
 }
+*/
