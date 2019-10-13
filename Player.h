@@ -3,11 +3,13 @@
 
 class Player : public Entity {
 	public:
-		float movementSpeed = 2.0f;
 		int hp = 10;
+		int maxHp = 10;
 		int direction = 0; // 1 - up, 2 - down, 3 - left, 4 - right
 		int coin = 0;
 		int cantMoveDi = 0;
+		bool powerUp = false;
+		float movementSpeed = 2.0f;
 
 			 Player();
 		void update();

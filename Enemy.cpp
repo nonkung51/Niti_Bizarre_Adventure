@@ -9,6 +9,7 @@ Enemy::Enemy() {
 
 void Enemy::update() {
 	sprite.setPosition(rect.getPosition());
+	text.setPosition(rect.getPosition().x + rect.getSize().y / 2, rect.getPosition().y);
 }
 
 void Enemy::updateMovement() {
@@ -33,7 +34,7 @@ void Enemy::updateMovement() {
 		counterWalking = 0;
 	}
 	counterIdle++;
-	if (counterIdle >= movementLength || cantMoveDi != 0) {
+	if ((counterIdle >= movementLength || cantMoveDi != 0) && !isAggressive) {
 		direction = generateRandom(10);
 		counterIdle = 0;
 		cantMoveDi = 0;

@@ -3,9 +3,12 @@
 
 class Pickup : public Entity {
 public:
-	bool isCoin = true;
-	bool destroyed = false;
 	int coinValue = 5;
+	int cost = 5;
+	bool isCoin = false;
+	bool isPowerUp = false;
+	bool destroyed = false;
+	bool inShop = true;
 
 	Pickup();
 	void update();

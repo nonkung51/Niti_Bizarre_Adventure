@@ -7,9 +7,12 @@ class Enemy : public Entity {
 		int direction = 0; // 1 - up, 2 - down, 3 - left, 4 - right
 		int attackDamage = 2;
 		int hp = 5; 
-		bool alive = true;
+		int maxHp = 5;
 		int cantMoveDi = 0;
 		float movementSpeed = 1.0f;
+		bool alive = true;
+		bool isAggressive = false;
+
 			 Enemy();
 		void update();
 		void updateMovement();

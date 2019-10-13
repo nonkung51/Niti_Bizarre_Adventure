@@ -16,25 +16,59 @@
 using namespace std;
 
 int main() {
-	sf::Clock attackClock, enemyAttackPlayerClock;
-	sf::RenderWindow window(sf::VideoMode(1000, 800), "Niti Bizarre Adventure");
+	sf::Clock attackClock, enemyAttackPlayerClock, aggressiveEnemyClock;
+	sf::RenderWindow window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure");
 	window.setFramerateLimit(60);
+
+	//View
+	sf::View view(sf::FloatRect(200, 200, 300, 200));
+	view.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
+	window.setView(view);
+
 	srand(time(NULL));
 
 	
 	sf::Font font;
 	if (!font.loadFromFile("res/font/manaspc.ttf")) {
-		cout << "Hey" << endl;
+		cout << "Can\'t load font" << endl;
 	}
-	/*	
+	
+	// Theme song
 	sf::Music music;
-	if (!music.openFromFile("res/music/Windless Slopes.mp3")) {
-		cout << "Hey" << endl;
+	if (!music.openFromFile("res/music/Windless Slopes.ogg")) {
+		cout << "res/music/Windless Slopes.ogg not loaded." << endl;
+	}
+	music.setLoop(true);
+	music.play();
+	
+
+	//Sound effect
+	sf::SoundBuffer shotBuffer;
+	if (!shotBuffer.loadFromFile("res/sound/fire.wav")) {
+		cout << "res/sound/fire.wav not loaded." << endl;
 	}
 
-	//music.play();
-	*/
+	sf::SoundBuffer playerHitBuffer;
+	if (!playerHitBuffer.loadFromFile("res/sound/playerHit.wav")) {
+		cout << "res/sound/playerHit.wav not loaded." << endl;
+	}
 
+	sf::SoundBuffer collisionHitBuffer;
+	if (!collisionHitBuffer.loadFromFile("res/sound/enemyHit.wav")) {
+		cout << "res/sound/enemyHit.wav not loaded." << endl;
+	}
+
+	sf::Sound soundShot;
+	soundShot.setBuffer(shotBuffer);
+
+	sf::Sound soundPlayerHit;
+	soundPlayerHit.setBuffer(playerHitBuffer);
+
+	sf::Sound soundCollisionHit;
+	soundCollisionHit.setBuffer(collisionHitBuffer);
+
+	//Texture
 	sf::Texture textureEnvironment;
 	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
 		cout << "res/img/environment.png not loaded." << endl;
@@ -60,6 +94,7 @@ int main() {
 		cout << "res/img/fireball.png not loaded." << endl;
 	}
 
+	//Game objects
 	Player player;
 	player.sprite.setTexture(texturePlayer);
 
@@ -76,6 +111,10 @@ int main() {
 	Enemy enemy;
 	enemy.sprite.setTexture(textureEnemy);
 	enemy.sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
+	enemy.text.setFont(font);
+	enemy.text.setCharacterSize(8);
+	enemy.text.setFillColor(sf::Color::Red);
+	enemy.text.setString(to_string(enemy.hp) + "/" + to_string(enemy.maxHp));
 	enemy.rect.setPosition(500,200);
 	enemyArray.push_back(enemy);
 
@@ -85,19 +124,28 @@ int main() {
 
 	vector<Pickup> pickupArray;
 	Pickup pickup;
-	pickup.sprite.setTexture(textureCoin);
-	pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
-	pickup.rect.setPosition(500, 500);
-	pickupArray.push_back(pickup);
 
 	vector<Wall> wallArray;
 	Wall wall;
 
 	sf::Text coinShow("Coin: ", font, 25);
 	coinShow.setFillColor(sf::Color::Yellow);
-	coinShow.setPosition(0, 0);
+	sf::Text hpShow("Coin: ", font, 25);
+	hpShow.setFillColor(sf::Color::Red);
 
+	////// Create environment
 	sf::Sprite environment(textureEnvironment);
+
+	pickup.inShop = true;
+	pickup.isPowerUp = true;
+	pickup.isCoin = false;
+	pickup.text.setFillColor(sf::Color::White);
+	pickup.text.setFont(font);
+	pickup.text.setString("Press F to buy for " + to_string(pickup.cost) + " coins");
+	pickup.sprite.setTexture(textureCoin);
+	pickup.sprite.setTextureRect(sf::IntRect(24 * 1.2, 24 * 6.8, 24, 24));
+	pickup.rect.setPosition(500, 300);
+	pickupArray.push_back(pickup);
 
 	int roomSize = generateRandom(10) + 3;
 	int verticalDoorLocation = generateRandom(roomSize);
@@ -128,7 +176,8 @@ int main() {
 
 	while (window.isOpen()) {
 		window.clear();
-
+		view.setCenter(player.rect.getPosition());
+		window.setView(view);
 		window.draw(environment);
 
 		//Player collide with wall
@@ -145,6 +194,7 @@ int main() {
 			for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
 				if ((*pIt).rect.getGlobalBounds().intersects((*wIt).rect.getGlobalBounds())) {
 					if ((*wIt).destructable) {
+						soundCollisionHit.play();
 						(*wIt).hp -= (*pIt).attackDamage;
 						if ((*wIt).hp <= 0) {
 							(*wIt).destroyed = true;// destroy wall
@@ -169,9 +219,24 @@ int main() {
 		//Player Collide with pickup
 		for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
 			if (player.rect.getGlobalBounds().intersects((*piIt).rect.getGlobalBounds())) {
-				if ((*piIt).isCoin) {
-					player.coin += (*piIt).coinValue;
-					(*piIt).destroyed = true;
+				if (!(*piIt).inShop) {
+					if ((*piIt).isCoin) {
+						player.coin += (*piIt).coinValue;
+						(*piIt).destroyed = true;
+					}
+					else if ((*piIt).isPowerUp) {
+						player.powerUp = true;
+						(*piIt).destroyed = true;
+					}
+				} else {
+					// draw cost
+					window.draw((*piIt).text);
+					if ((*piIt).isPowerUp && player.coin >= (*piIt).cost 
+						&& sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+						player.coin -= (*piIt).cost;
+						player.powerUp = true;
+						(*piIt).destroyed = true;
+					}
 				}
 			}
 		}
@@ -182,7 +247,8 @@ int main() {
 			enemyAttackPlayerClock.restart();
 			for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 				if (player.rect.getGlobalBounds().intersects((*eIt).rect.getGlobalBounds())) {
-					
+					soundPlayerHit.play();
+
 					textDisplay.text.setPosition(
 						player.rect.getPosition().x + player.rect.getSize().x / 2,
 						player.rect.getPosition().y - player.rect.getSize().y / 2
@@ -202,7 +268,10 @@ int main() {
 			for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 				if ((*pIt).rect.getGlobalBounds().intersects(
 					(*eIt).rect.getGlobalBounds())) {
+					(*eIt).isAggressive = true; //Set to chase player
 					
+					// Enemy got hit
+					soundCollisionHit.play();	
 					//Damage display
 					textDisplay.text.setFillColor(sf::Color::Red);
 					textDisplay.text.setString(to_string((*pIt).attackDamage));
@@ -212,19 +281,69 @@ int main() {
 					);
 					textDisplayArray.push_back(textDisplay);
 
+					//Update enemy health
 					(*pIt).destroyed = true;
 					(*eIt).hp -= (*pIt).attackDamage;
+					(*eIt).text.setString(to_string((*eIt).hp) + "/" + to_string((*eIt).maxHp));
 					if ((*eIt).hp <= 0) {
 						(*eIt).alive = false;
 					}
 				}
 			}
 		}
+
+		//Aggressive enemy
+		sf::Time aggressiveEnemyTimer = aggressiveEnemyClock.getElapsedTime();
+		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
+			if ((*eIt).isAggressive) {
+				if (aggressiveEnemyTimer.asSeconds() >= 1.0f) {
+					aggressiveEnemyClock.restart();
+					cout << (*eIt).direction << endl;
+					if (abs(player.rect.getPosition().x - (*eIt).rect.getPosition().x) >=
+						abs(player.rect.getPosition().y - (*eIt).rect.getPosition().y)) {
+						if (player.rect.getPosition().x > (*eIt).rect.getPosition().x) {
+							(*eIt).direction = 4;
+							cout << "player is to the right" << endl;
+						}
+						else if (player.rect.getPosition().x < (*eIt).rect.getPosition().x) {
+							(*eIt).direction = 3;
+							cout << "player is to the left" << endl;
+						}
+					}
+					else {
+						if (player.rect.getPosition().y > (*eIt).rect.getPosition().y) {
+							(*eIt).direction = 2;
+							cout << "player is to the bottom" << endl;
+						}
+						else if (player.rect.getPosition().y < (*eIt).rect.getPosition().y) {
+							(*eIt).direction = 1;
+							cout << "player is to the top" << endl;
+						}
+					}
+				}
+			}
+		}
+
 		//Delete dead enemy
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 			if ((*eIt).alive == false) {
 				//random generate coin
 				if (generateRandom(3) == 1) {
+					pickup.inShop = false;
+					pickup.isCoin = true;
+					pickup.isPowerUp = false;
+					pickup.sprite.setTexture(textureCoin);
+					pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
+					pickup.rect.setPosition((*eIt).rect.getPosition());
+					pickupArray.push_back(pickup);
+				}
+				//random generate powerup
+				if (generateRandom(3) == 1) {
+					pickup.inShop = false;
+					pickup.isPowerUp = true;
+					pickup.isCoin = false;
+					pickup.sprite.setTexture(textureCoin);
+					pickup.sprite.setTextureRect(sf::IntRect(24 * 1.2, 24 * 6.8, 24, 24));
 					pickup.rect.setPosition((*eIt).rect.getPosition());
 					pickupArray.push_back(pickup);
 				}
@@ -262,6 +381,21 @@ int main() {
 			if ((*wIt).destroyed) {
 				//random generate coin
 				if (generateRandom(3) == 1) {
+					pickup.inShop = false;
+					pickup.isCoin = true;
+					pickup.isPowerUp = false;
+					pickup.sprite.setTexture(textureCoin);
+					pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
+					pickup.rect.setPosition((*wIt).rect.getPosition());
+					pickupArray.push_back(pickup);
+				}
+				//random generate powerup
+				if (generateRandom(3) == 1) {
+					pickup.inShop = false;
+					pickup.isPowerUp = true;
+					pickup.isCoin = false;
+					pickup.sprite.setTexture(textureCoin);
+					pickup.sprite.setTextureRect(sf::IntRect(24 * 1.2, 24 * 6.8, 24, 24));
 					pickup.rect.setPosition((*wIt).rect.getPosition());
 					pickupArray.push_back(pickup);
 				}
@@ -275,12 +409,29 @@ int main() {
 		if (checkAttack.asSeconds() >= 0.15f) {
 			attackClock.restart();
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-				projectile.rect.setPosition(
-					player.rect.getPosition().x + player.rect.getSize().x / 2 - projectile.rect.getSize().x / 2,
-					player.rect.getPosition().y + player.rect.getSize().y / 2 - projectile.rect.getSize().y / 2
-				);
-				projectile.direction = player.direction;
-				projectileArray.push_back(projectile);
+				soundShot.play();
+				if (player.powerUp) {
+					projectile.rect.setPosition(
+						player.rect.getPosition().x + player.rect.getSize().x / 2 - projectile.rect.getSize().x / 2,
+						player.rect.getPosition().y + player.rect.getSize().y / 2 - projectile.rect.getSize().y / 2
+					);
+					projectile.direction = player.direction;
+					projectileArray.push_back(projectile);
+					projectile.rect.setPosition(
+						player.rect.getPosition().x + player.rect.getSize().x / 2 - projectile.rect.getSize().x / 2 + generateRandom(50),
+						player.rect.getPosition().y + player.rect.getSize().y / 2 - projectile.rect.getSize().y / 2 + generateRandom(50)
+					);
+					projectile.direction = player.direction;
+					projectileArray.push_back(projectile);
+				}
+				else {
+					projectile.rect.setPosition(
+						player.rect.getPosition().x + player.rect.getSize().x / 2 - projectile.rect.getSize().x / 2,
+						player.rect.getPosition().y + player.rect.getSize().y / 2 - projectile.rect.getSize().y / 2
+					);
+					projectile.direction = player.direction;
+					projectileArray.push_back(projectile);
+				}
 			}
 		}
 
@@ -304,7 +455,6 @@ int main() {
 		// Draw Pickup item
 		for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
 			(*piIt).update();
-			// window.draw((*piIt).rect);
 			window.draw((*piIt).sprite);
 		}
 
@@ -319,12 +469,23 @@ int main() {
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 			(*eIt).update();
 			(*eIt).updateMovement();
-			//window.draw(enemyArray[counter].rect);
+			window.draw((*eIt).text);
+			window.draw((*eIt).rect);
 			window.draw((*eIt).sprite);
 		}
 
+		//drawing coin
+		coinShow.setString("Coin : " + to_string(player.coin));
+		coinShow.setPosition(player.rect.getPosition().x - window.getSize().x/2, player.rect.getPosition().y - window.getSize().y / 2);
+		window.draw(coinShow);
+		//drawing player hp
+		hpShow.setString("HP : " + to_string(player.hp) + "/" + to_string(player.maxHp));
+		hpShow.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y - window.getSize().y / 2 + 24);
+		window.draw(hpShow);
+
 		player.updateMovement();
 		player.update();
+
 		window.draw(player.sprite);
 
 		// Draw damage effect
@@ -332,10 +493,6 @@ int main() {
 			(*tIt).update();
 			window.draw((*tIt).text);
 		}
-
-		//drawing coin
-		coinShow.setString("Coin : " + to_string(player.coin));
-		window.draw(coinShow);
 
 		window.display();
 	}
