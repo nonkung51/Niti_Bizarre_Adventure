@@ -27,6 +27,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="helper.cpp" />
+    <ClCompile Include="Source.cpp" />
     <ClCompile Include="TextDisplay.cpp" />
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>

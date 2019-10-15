@@ -4,7 +4,6 @@
 Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(sf::FloatRect(200, 200, 300, 200)) {
 	window.setFramerateLimit(60);
 
-	//sf::View view(sf::FloatRect(200, 200, 300, 200));
 	view.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
 	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
 	window.setView(view);
@@ -19,8 +18,8 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 		cout << "res/music/Windless Slopes.ogg not loaded." << endl;
 	}
 
-	if (!shotBuffer.loadFromFile("res/sound/fire.wav")) {
-		cout << "res/sound/fire.wav not loaded." << endl;
+	if (!shotBuffer.loadFromFile("res/sound/oraora.wav")) {
+		cout << "res/sound/oraora.wav not loaded." << endl;
 	}
 
 	if (!playerHitBuffer.loadFromFile("res/sound/playerHit.wav")) {
@@ -31,16 +30,25 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 		cout << "res/sound/enemyHit.wav not loaded." << endl;
 	}
 
+	if (!yareYareBuffer.loadFromFile("res/sound/yare-yare.wav")) {
+		cout << "res/sound/enemyHit.wav not loaded." << endl;
+	}
+
 	soundShot.setBuffer(shotBuffer);
 	soundPlayerHit.setBuffer(playerHitBuffer);
 	soundCollisionHit.setBuffer(collisionHitBuffer);
+	yareYare.setBuffer(yareYareBuffer);
 
 	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
 		cout << "res/img/environment.png not loaded." << endl;
 	}
 
-	if (!texturePlayer.loadFromFile("res/img/player.png")) {
+	if (!texturePlayer.loadFromFile("res/img/niti.png")) {
 		cout << "res/img/player.png not loaded." << endl;
+	}
+
+	if (!textureStand.loadFromFile("res/img/stand.png")) {
+		cout << "res/img/stand.png not loaded." << endl;
 	}
 
 	if (!textureEnemy.loadFromFile("res/img/enemy.png")) {
@@ -56,7 +64,14 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 	}
 
 	player.sprite.setTexture(texturePlayer);
-	stand.sprite.setTexture(texturePlayer);
+	stand.sprite.setTexture(textureStand);
+
+	player.sprite.setTextureRect(sf::IntRect(0, texturePlayer.getSize().y / 21 * 10,
+		texturePlayer.getSize().x / 13, texturePlayer.getSize().y / 21));
+	stand.sprite.setTextureRect(sf::IntRect(0, texturePlayer.getSize().y / 21 * 10,
+		texturePlayer.getSize().x / 13, texturePlayer.getSize().y / 21));
+
+	//player.rect.setSize(sf::Vector2f(texturePlayer.getSize()));
 
 	projectile.sprite.setTexture(textureFireball);
 	projectile.sprite.setScale(
@@ -99,29 +114,29 @@ void Game::run() {
 void Game::render() {
 	// Draw wall
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
-		window.draw((*wIt).rect);
+		window.draw(wIt->rect);
 	}
 
 	// Draw Pickup item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
-		(*piIt).update();
-		window.draw((*piIt).sprite);
+		piIt->update();
+		window.draw(piIt->sprite);
 	}
 
 	//Update Bullet
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
-		(*pIt).update();
-		window.draw((*pIt).sprite);
-		//window.draw((*pIt).rect);
+		pIt->update();
+		//window.draw(pIt->sprite);
+		//window.draw(pIt->rect);
 	}
 
 	//Update Enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-		(*eIt).update();
-		(*eIt).updateMovement();
-		window.draw((*eIt).text);
-		window.draw((*eIt).rect);
-		window.draw((*eIt).sprite);
+		eIt->update();
+		eIt->updateMovement();
+		window.draw(eIt->text);
+		window.draw(eIt->rect);
+		window.draw(eIt->sprite);
 	}
 
 	//drawing coin
@@ -140,12 +155,12 @@ void Game::render() {
 	}
 	
 	if (!isUsingStand) {
-		player.updateMovement();
+		player.updateMovement(false);
 		player.update();
 	}
 	else {
 		window.draw(stand.sprite);
-		stand.updateMovement();
+		stand.updateMovement(false);
 		stand.update();
 	}
 
@@ -153,8 +168,8 @@ void Game::render() {
 
 	// Draw damage effect
 	for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
-		(*tIt).update();
-		window.draw((*tIt).text);
+		tIt->update();
+		window.draw(tIt->text);
 	}
 
 	window.display();
@@ -174,9 +189,12 @@ void Game::setStandPos() {
 
 void Game::inputProcess() {
 	sf::Time usingStandTime = switchStandClock.getElapsedTime();
-	if (usingStandTime.asSeconds() >= 0.25f) {
+	if (usingStandTime.asSeconds() >= 0.2f) {
 		switchStandClock.restart();
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+			if (!isUsingStand) {
+				yareYare.play();
+			}
 			setStandPos();
 			cout << "Stand" << endl;
 			isUsingStand = !isUsingStand;
@@ -199,7 +217,7 @@ void Game::inputProcess() {
 void Game::clearJunk() {
 	//Delete dead enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-		if ((*eIt).alive == false) {
+		if (eIt->alive == false) {
 			//random generate coin
 			if (generateRandom(3) == 1) {
 				pickup.inShop = false;
@@ -207,7 +225,7 @@ void Game::clearJunk() {
 				pickup.isPowerUp = false;
 				pickup.sprite.setTexture(textureCoin);
 				pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
-				pickup.rect.setPosition((*eIt).rect.getPosition());
+				pickup.rect.setPosition(eIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
 			//random generate powerup
@@ -217,7 +235,7 @@ void Game::clearJunk() {
 				pickup.isCoin = false;
 				pickup.sprite.setTexture(textureCoin);
 				pickup.sprite.setTextureRect(sf::IntRect(24 * 1.2, 24 * 6.8, 24, 24));
-				pickup.rect.setPosition((*eIt).rect.getPosition());
+				pickup.rect.setPosition(eIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
 			enemyArray.erase(eIt);
@@ -227,7 +245,7 @@ void Game::clearJunk() {
 
 	//Delete Bullet
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
-		if ((*pIt).destroyed) {
+		if (pIt->destroyed) {
 			projectileArray.erase(pIt);
 			break;
 		}
@@ -235,7 +253,7 @@ void Game::clearJunk() {
 
 	//Delete TextDisplay
 	for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
-		if ((*tIt).destroyed) {
+		if (tIt->destroyed) {
 			textDisplayArray.erase(tIt);
 			break;
 		}
@@ -243,7 +261,7 @@ void Game::clearJunk() {
 
 	//Delete Item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
-		if ((*piIt).destroyed) {
+		if (piIt->destroyed) {
 			pickupArray.erase(piIt);
 			break;
 		}
@@ -251,7 +269,7 @@ void Game::clearJunk() {
 
 	//Delete Destructable wall
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
-		if ((*wIt).destroyed) {
+		if (wIt->destroyed) {
 			//random generate coin
 			if (generateRandom(3) == 1) {
 				pickup.inShop = false;
@@ -259,7 +277,7 @@ void Game::clearJunk() {
 				pickup.isPowerUp = false;
 				pickup.sprite.setTexture(textureCoin);
 				pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
-				pickup.rect.setPosition((*wIt).rect.getPosition());
+				pickup.rect.setPosition(wIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
 			//random generate powerup
@@ -269,7 +287,7 @@ void Game::clearJunk() {
 				pickup.isCoin = false;
 				pickup.sprite.setTexture(textureCoin);
 				pickup.sprite.setTextureRect(sf::IntRect(24 * 1.2, 24 * 6.8, 24, 24));
-				pickup.rect.setPosition((*wIt).rect.getPosition());
+				pickup.rect.setPosition(wIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
 			wallArray.erase(wIt);
@@ -288,7 +306,7 @@ void Game::update() {
 void Game::collisionRelated() {
 	//Player collide with wall
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
-		if (player.rect.getGlobalBounds().intersects((*wIt).rect.getGlobalBounds())) {
+		if (player.rect.getGlobalBounds().intersects(wIt->rect.getGlobalBounds())) {
 			player.cantMoveDi = player.direction;
 			sf::Vector2f bounce[4] = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 			player.rect.move(bounce[player.direction - 1] * player.movementSpeed);
@@ -298,15 +316,15 @@ void Game::collisionRelated() {
 	//Projectile collide with wall
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
 		for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
-			if ((*pIt).rect.getGlobalBounds().intersects((*wIt).rect.getGlobalBounds())) {
-				if ((*wIt).destructable) {
+			if (pIt->rect.getGlobalBounds().intersects(wIt->rect.getGlobalBounds())) {
+				if (wIt->destructable) {
 					soundCollisionHit.play();
-					(*wIt).hp -= (*pIt).attackDamage;
-					if ((*wIt).hp <= 0) {
-						(*wIt).destroyed = true;// destroy wall
+					wIt->hp -= pIt->attackDamage;
+					if (wIt->hp <= 0) {
+						wIt->destroyed = true;// destroy wall
 					}
 				}
-				(*pIt).destroyed = true;
+				pIt->destroyed = true;
 			}
 		}
 	}
@@ -314,10 +332,10 @@ void Game::collisionRelated() {
 	//Enemy collide with wall
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-			if ((*eIt).rect.getGlobalBounds().intersects((*wIt).rect.getGlobalBounds())) {
-				(*eIt).cantMoveDi = (*eIt).direction;
+			if (eIt->rect.getGlobalBounds().intersects(wIt->rect.getGlobalBounds())) {
+				eIt->cantMoveDi = eIt->direction;
 				sf::Vector2f bounce[4] = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
-				(*eIt).rect.move(bounce[(*eIt).direction - 1] * (*eIt).movementSpeed);
+				eIt->rect.move(bounce[eIt->direction - 1] * eIt->movementSpeed);
 			}
 		}
 	}
@@ -329,20 +347,21 @@ void Game::enemyRelated() {
 	if (enemyAttackPlayer.asSeconds() >= 0.30f) {
 		enemyAttackPlayerClock.restart();
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-			if (player.rect.getGlobalBounds().intersects((*eIt).rect.getGlobalBounds())) {
+			if (player.rect.getGlobalBounds().intersects(eIt->rect.getGlobalBounds())) {
 				isUsingStand = false; // stop using stand if player got hit
+				eIt->isAggressive = true; // enemy got agressive when see player
 				stand.rect.setPosition(player.rect.getPosition());
 				soundPlayerHit.play();
 
 				textDisplay.text.setPosition(
 					player.rect.getPosition().x + player.rect.getSize().x / 2,
-					player.rect.getPosition().y - player.rect.getSize().y / 2
+					player.rect.getPosition().y + player.rect.getSize().y
 				);
 				textDisplay.text.setFillColor(sf::Color::Yellow);
-				textDisplay.text.setString(to_string((*eIt).attackDamage));
+				textDisplay.text.setString(to_string(eIt->attackDamage));
 				textDisplayArray.push_back(textDisplay);
 
-				player.hp -= (*eIt).attackDamage;
+				player.hp -= eIt->attackDamage;
 				cout << player.hp << endl;
 			}
 		}
@@ -351,27 +370,27 @@ void Game::enemyRelated() {
 	//Check collision attack enemy
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-			if ((*pIt).rect.getGlobalBounds().intersects(
-				(*eIt).rect.getGlobalBounds())) {
-				(*eIt).isAggressive = true; //Set to chase player
+			if (pIt->rect.getGlobalBounds().intersects(
+				eIt->rect.getGlobalBounds())) {
+				eIt->isAggressive = true; //Set to chase player
 
 				// Enemy got hit
 				soundCollisionHit.play();
 				//Damage display
 				textDisplay.text.setFillColor(sf::Color::Red);
-				textDisplay.text.setString(to_string((*pIt).attackDamage));
+				textDisplay.text.setString(to_string(pIt->attackDamage));
 				textDisplay.text.setPosition(
-					(*eIt).rect.getPosition().x + (*eIt).rect.getSize().x / 2,
-					(*eIt).rect.getPosition().y - (*eIt).rect.getSize().y / 2
+					eIt->rect.getPosition().x + eIt->rect.getSize().x / 2,
+					eIt->rect.getPosition().y - eIt->rect.getSize().y / 2
 				);
 				textDisplayArray.push_back(textDisplay);
 
 				//Update enemy health
-				(*pIt).destroyed = true;
-				(*eIt).hp -= (*pIt).attackDamage;
-				(*eIt).text.setString(to_string((*eIt).hp) + "/" + to_string((*eIt).maxHp));
-				if ((*eIt).hp <= 0) {
-					(*eIt).alive = false;
+				pIt->destroyed = true;
+				eIt->hp -= pIt->attackDamage;
+				eIt->text.setString(to_string(eIt->hp) + "/" + to_string(eIt->maxHp));
+				if (eIt->hp <= 0) {
+					eIt->alive = false;
 				}
 			}
 		}
@@ -380,28 +399,28 @@ void Game::enemyRelated() {
 	//Aggressive enemy
 	sf::Time aggressiveEnemyTimer = aggressiveEnemyClock.getElapsedTime();
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-		if ((*eIt).isAggressive) {
+		if (eIt->isAggressive) {
 			if (aggressiveEnemyTimer.asSeconds() >= 1.0f) {
 				aggressiveEnemyClock.restart();
-				cout << (*eIt).direction << endl;
-				if (abs(player.rect.getPosition().x - (*eIt).rect.getPosition().x) >=
-					abs(player.rect.getPosition().y - (*eIt).rect.getPosition().y)) {
-					if (player.rect.getPosition().x > (*eIt).rect.getPosition().x) {
-						(*eIt).direction = 4;
+				cout << eIt->direction << endl;
+				if (abs(player.rect.getPosition().x - eIt->rect.getPosition().x) >=
+					abs(player.rect.getPosition().y - eIt->rect.getPosition().y)) {
+					if (player.rect.getPosition().x > eIt->rect.getPosition().x) {
+						eIt->direction = 4;
 						cout << "player is to the right" << endl;
 					}
-					else if (player.rect.getPosition().x < (*eIt).rect.getPosition().x) {
-						(*eIt).direction = 3;
+					else if (player.rect.getPosition().x < eIt->rect.getPosition().x) {
+						eIt->direction = 3;
 						cout << "player is to the left" << endl;
 					}
 				}
 				else {
-					if (player.rect.getPosition().y > (*eIt).rect.getPosition().y) {
-						(*eIt).direction = 2;
+					if (player.rect.getPosition().y > eIt->rect.getPosition().y) {
+						eIt->direction = 2;
 						cout << "player is to the bottom" << endl;
 					}
-					else if (player.rect.getPosition().y < (*eIt).rect.getPosition().y) {
-						(*eIt).direction = 1;
+					else if (player.rect.getPosition().y < eIt->rect.getPosition().y) {
+						eIt->direction = 1;
 						cout << "player is to the top" << endl;
 					}
 				}
@@ -417,6 +436,7 @@ void Game::playerAttack() {
 		if (checkAttack.asSeconds() >= 0.15f) {
 			attackClock.restart();
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+				stand.updateMovement(true);
 				soundShot.play();
 				projectile.rect.setPosition(
 					stand.rect.getPosition().x + stand.rect.getSize().x / 2 - projectile.rect.getSize().x / 2,
@@ -432,25 +452,25 @@ void Game::playerAttack() {
 void Game::itemRelated() {
 	//Player Collide with pickup
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
-		if (player.rect.getGlobalBounds().intersects((*piIt).rect.getGlobalBounds())) {
-			if (!(*piIt).inShop) {
-				if ((*piIt).isCoin) {
-					player.coin += (*piIt).coinValue;
-					(*piIt).destroyed = true;
+		if (player.rect.getGlobalBounds().intersects(piIt->rect.getGlobalBounds())) {
+			if (!(piIt->inShop)) {
+				if (piIt->isCoin) {
+					player.coin += piIt->coinValue;
+					piIt->destroyed = true;
 				}
-				else if ((*piIt).isPowerUp) {
-					player.powerUp = true;
-					(*piIt).destroyed = true;
+				else if (piIt->isPowerUp) {
+					player.hp += 5;
+					piIt->destroyed = true;
 				}
 			}
 			else {
 				// draw cost
-				window.draw((*piIt).text);
-				if ((*piIt).isPowerUp && player.coin >= (*piIt).cost
+				window.draw(piIt->text);
+				if (piIt->isPowerUp && player.coin >= piIt->cost
 					&& sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
-					player.coin -= (*piIt).cost;
-					player.powerUp = true;
-					(*piIt).destroyed = true;
+					player.coin -= piIt->cost;
+					player.hp += 5;
+					piIt->destroyed = true;
 				}
 			}
 		}

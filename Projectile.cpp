@@ -1,7 +1,7 @@
 #include "Projectile.h"
 
 Projectile::Projectile() {
-	rect.setSize(sf::Vector2f(10, 10));
+	rect.setSize(sf::Vector2f(32, 32));
 	rect.setFillColor(sf::Color::Green);
 }
 

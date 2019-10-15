@@ -6,41 +6,62 @@ Player::Player() {
 	rect.setFillColor(sf::Color::Blue);
 
 	sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
+	lastAnim = clock.getElapsedTime();
 }
 
 void Player::update() {
 	sprite.setPosition(rect.getPosition());
 }
 
-void Player::updateMovement() {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && cantMoveDi != 1 ) {
-		rect.move({ 0.0f, -movementSpeed });
-		sprite.setTextureRect(sf::IntRect(32 * counterWalking, 32, 32, 32));
-		direction = 1;
+void Player::updateMovement(bool isPlayAttack) {
+	if (isPlayAttack) {
+		isPlayingAttack = true;
 	}
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && cantMoveDi != 2) {
-		rect.move({ 0.0f, movementSpeed });
-		sprite.setTextureRect(sf::IntRect(32 * counterWalking, 32 * 9, 32, 32));
-		direction = 2;
+	lastAnim = clock.getElapsedTime();
+	if (lastAnim.asSeconds() > 0.01) {
+		clock.restart();
+		int spriteSizeX = sprite.getTexture()->getSize().x / 13;
+		int spriteSizeY = sprite.getTexture()->getSize().y / 21;
+		if (isPlayingAttack) {
+			int animDi[4] = {4,6,5,7};
+			sprite.setTextureRect(sf::IntRect(spriteSizeX * counterAttack, spriteSizeY * animDi[direction - 1], spriteSizeX, spriteSizeY));
+			counterAttack++;
+			if (counterAttack == 8) {
+				counterAttack = 0;
+				sprite.setTextureRect(sf::IntRect(spriteSizeX * 0, spriteSizeY * animDi[direction - 1], spriteSizeX, spriteSizeY));
+				isPlayingAttack = false;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && cantMoveDi != 1) {
+			rect.move({ 0.0f, -movementSpeed });
+			sprite.setTextureRect(sf::IntRect(spriteSizeX * counterWalking, spriteSizeY * 8, spriteSizeX, spriteSizeY));
+			direction = 1;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && cantMoveDi != 2) {
+			rect.move({ 0.0f, movementSpeed });
+			sprite.setTextureRect(sf::IntRect(spriteSizeX * counterWalking, spriteSizeY * 10, spriteSizeX, spriteSizeY));
+			direction = 2;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && cantMoveDi != 3) {
+			rect.move({ -movementSpeed, 0.0f });
+			sprite.setTextureRect(sf::IntRect(spriteSizeX * counterWalking, spriteSizeY * 9, spriteSizeX, spriteSizeY));
+			direction = 3;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && cantMoveDi != 4) {
+			rect.move({ movementSpeed, 0.0f });
+			sprite.setTextureRect(sf::IntRect(spriteSizeX * counterWalking, spriteSizeY * 11, spriteSizeX, spriteSizeY));
+			direction = 4;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+			movementSpeed = runningSpeed;
+		}
+		else {
+			movementSpeed = walkSpeed;
+		}
+		counterWalking++;
+		if (counterWalking == 8) {
+			counterWalking = 0;
+		}
+		cantMoveDi = 0;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && cantMoveDi != 3) {
-		rect.move({ -movementSpeed, 0.0f });
-		sprite.setTextureRect(sf::IntRect(32 * counterWalking, 32 * 9, 32, 32));
-		direction = 3;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && cantMoveDi != 4) {
-		rect.move({ movementSpeed, 0.0f });
-		sprite.setTextureRect(sf::IntRect(32 * counterWalking, 32, 32, 32));
-		direction = 4;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-		movementSpeed = runningSpeed;
-	} else {
-		movementSpeed = walkSpeed;
-	}
-	counterWalking++;
-	if (counterWalking == 8) {
-		counterWalking = 0;
-	}
-	cantMoveDi = 0;
 }

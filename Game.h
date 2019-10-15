@@ -42,13 +42,16 @@ private:
 	sf::SoundBuffer shotBuffer;
 	sf::SoundBuffer playerHitBuffer;
 	sf::SoundBuffer collisionHitBuffer;
+	sf::SoundBuffer yareYareBuffer;
 
 	sf::Sound soundShot;
 	sf::Sound soundPlayerHit;
 	sf::Sound soundCollisionHit;
+	sf::Sound yareYare;
 
 	sf::Texture textureEnvironment;
 	sf::Texture texturePlayer;
+	sf::Texture textureStand;
 	sf::Texture textureEnemy;
 	sf::Texture textureCoin;
 	sf::Texture textureFireball;
@@ -76,4 +79,5 @@ private:
 	sf::Text coinShow;
 	sf::Text hpShow;
 	sf::Text isUsingStandShow;
+	sf::Vector2f focusPoint;
 };

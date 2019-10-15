@@ -17,7 +17,7 @@
 
 using namespace std;
 
-int main() {
+int _main() {
 	Game game;
 	game.run();
 	return 0;

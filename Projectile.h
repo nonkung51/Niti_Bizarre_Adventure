@@ -13,7 +13,7 @@ class Projectile : public Entity {
 		void update();
 	private:
 		int animCounter = 0;
-		int lifeTime = 2;
+		int lifeTime = 3;
 		int counterLifetime = 0;
 		float movementSpeed = 10.0f;
 };
