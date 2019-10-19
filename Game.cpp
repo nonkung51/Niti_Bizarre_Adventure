@@ -1,7 +1,8 @@
 #include "Game.h"
+#include "DialogBox.h"
 #include <iostream>
 
-Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(sf::FloatRect(200, 200, 300, 200)) {
+Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(sf::FloatRect(200, 200, 300, 200)), dialogBox() {
 	window.setFramerateLimit(60);
 
 	view.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
@@ -97,6 +98,17 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 	hpShow.setCharacterSize(25);
 	isUsingStandShow.setFont(font);
 	isUsingStandShow.setCharacterSize(25);
+
+	dialogBox.box.setPosition(0, 2 * window.getSize().y / 3);
+	dialogBox.box.setSize(sf::Vector2f(window.getSize().x, window.getSize().y / 3));
+
+	dialogBox.text.setFont(font);
+	dialogBox.text.setPosition(20, ((2 * window.getSize().y) / 3) + 20);
+
+	// world
+	world.CreateMatrix();
+	world.Interpolation();
+	world.CreateGraphics();
 }
 
 void Game::run() {
@@ -112,6 +124,9 @@ void Game::run() {
 }
 
 void Game::render() {
+	//World
+	world.Render(&window);
+
 	// Draw wall
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
 		window.draw(wIt->rect);
@@ -153,18 +168,19 @@ void Game::render() {
 		isUsingStandShow.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y - window.getSize().y / 2 + 48);
 		window.draw(isUsingStandShow);
 	}
-	
-	if (!isUsingStand) {
-		player.updateMovement(false);
-		player.update();
-	}
-	else {
-		window.draw(stand.sprite);
-		stand.updateMovement(false);
-		stand.update();
-	}
-
 	window.draw(player.sprite);
+
+	if (!dialogBox.isShow) {
+		if (!isUsingStand) {
+			player.updateMovement(false);
+			player.update();
+		}
+		else {
+			window.draw(stand.sprite);
+			stand.updateMovement(false);
+			stand.update();
+		}
+	}
 
 	// Draw damage effect
 	for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
@@ -172,6 +188,16 @@ void Game::render() {
 		window.draw(tIt->text);
 	}
 
+	dialogBox.box.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y + window.getSize().y / 6);
+	dialogBox.text.setPosition(20 + player.rect.getPosition().x - window.getSize().x / 2, 20 + player.rect.getPosition().y + window.getSize().y / 6);
+	dialogBox.text.setString("Hi");
+	//Draw dialog box
+	if (dialogBox.isShow) {
+		window.draw(dialogBox.box);
+		window.draw(dialogBox.text);
+	}
+
+	
 	window.display();
 }
 
@@ -203,6 +229,10 @@ void Game::inputProcess() {
 	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 		window.close();
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+		dialogBox.isShow = true;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
@@ -362,7 +392,6 @@ void Game::enemyRelated() {
 				textDisplayArray.push_back(textDisplay);
 
 				player.hp -= eIt->attackDamage;
-				cout << player.hp << endl;
 			}
 		}
 	}

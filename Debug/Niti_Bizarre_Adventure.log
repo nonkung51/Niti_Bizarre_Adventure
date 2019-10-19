@@ -1,32 +1,4 @@
 ﻿  Source.cpp
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(80,28): warning C4200: nonstandard extension used: zero-sized array in struct/union
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(80,28): message : This member will be ignored by a defaulted constructor or copy/move assignment operator
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(105,54): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(105,54): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(105,54): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(105,54): warning C4244:             T=unsigned int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(105,54): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:             T=unsigned int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:         and
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,76): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:             T=unsigned int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:         and
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(106,53): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(113,64): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(113,64): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(113,64): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(113,64): warning C4244:             T=unsigned int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Source.cpp(113,64): warning C4244:         ]
+  WorldGenerator.cpp
+  Generating Code...
   Niti_Bizarre_Adventure.vcxproj -> C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Debug\Niti_Bizarre_Adventure.exe

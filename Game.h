@@ -12,7 +12,10 @@
 #include "TextDisplay.h"
 #include "Pickup.h"
 #include "Wall.h"
+#include "DialogBox.h"
+#include "WorldGenerator.h"
 #include "helper.h"
+
 
 class Game {
 public:
@@ -74,10 +77,14 @@ private:
 
 	vector<Wall> wallArray;
 	Wall wall;
+	WorldGenerator world;
+
 
 	// UI related
 	sf::Text coinShow;
 	sf::Text hpShow;
 	sf::Text isUsingStandShow;
 	sf::Vector2f focusPoint;
+
+	DialogBox dialogBox;
 };
