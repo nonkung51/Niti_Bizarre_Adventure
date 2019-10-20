@@ -29,7 +29,7 @@ public:
 	void enemyRelated();
 	void playerAttack();
 	void itemRelated();
-	void setStandPos();
+	void generateMap();
 
 	bool isUsingStand = false;
 
@@ -78,6 +78,9 @@ private:
 	vector<Wall> wallArray;
 	Wall wall;
 	WorldGenerator world;
+	sf::Texture tiles;
+	sf::Sprite mapDrawer;
+	vector <sf::Sprite> mapSprite;
 
 
 	// UI related

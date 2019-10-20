@@ -12,8 +12,9 @@ class WorldGenerator {
 
 		void Render(sf::RenderWindow* window);
 
-	private:
 		int _Matrix[89][89];
+
+	private:
 		std::vector<sf::RectangleShape*> _Graphics;
 
 };

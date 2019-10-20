@@ -40,6 +40,13 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 	soundCollisionHit.setBuffer(collisionHitBuffer);
 	yareYare.setBuffer(yareYareBuffer);
 
+	// theme music
+	if (!music.openFromFile("res/music/Windless Slopes.ogg")) {
+		cout << "res/music/Windless Slopes.ogg not loaded." << endl;
+	}
+	music.setLoop(true);
+	music.play();
+
 	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
 		cout << "res/img/environment.png not loaded." << endl;
 	}
@@ -104,12 +111,105 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 
 	dialogBox.text.setFont(font);
 	dialogBox.text.setPosition(20, ((2 * window.getSize().y) / 3) + 20);
+	
+	//World sprite
+	if (!tiles.loadFromFile("res/img/tiles.png")) {
+		cout << "res/img/tiles.png not loaded." << endl;
+	}
 
 	// world
 	world.CreateMatrix();
 	world.Interpolation();
-	world.CreateGraphics();
+	//world.CreateGraphics();
+	generateMap();
+
 }
+
+int heightToTile(int h) {
+	if (h < 35) {
+		return 0;
+	}
+
+	// Sand - Beaches 
+	if (h > 34 && h < 50) {
+		return 1;
+	}
+
+	// Grass
+	if (h > 49) {
+		return 2;
+	}
+}
+
+void Game::generateMap() {
+	mapDrawer.setTexture(tiles);
+	for (int y = 0; y < 89; y++) {
+		for (int x = 0; x < 89; x++) {
+			// water
+			if (heightToTile(world._Matrix[y][x]) == 0) {
+				mapDrawer.setTextureRect(sf::IntRect(13 * 16, 16 * 0, 16, 16));
+				mapDrawer.setPosition(sf::Vector2f(x * 64, y * 64));
+				mapDrawer.setScale(4.0f, 4.0f);
+				mapSprite.push_back(mapDrawer);
+				if (heightToTile(world._Matrix[y - 1][x - 1]) == 1 
+					|| heightToTile(world._Matrix[y - 1][x]) == 1
+					|| heightToTile(world._Matrix[y - 1][x + 1]) == 1
+					|| heightToTile(world._Matrix[y][x - 1]) == 1
+					|| heightToTile(world._Matrix[y][x + 1]) == 1
+					|| heightToTile(world._Matrix[y + 1][x - 1]) == 1
+					|| heightToTile(world._Matrix[y + 1][x]) == 1
+					|| heightToTile(world._Matrix[y + 1][x +1]) == 1) {
+					Wall wall;
+					wall.rect.setPosition(sf::Vector2f(x * 64, y * 64));
+					wallArray.push_back(wall);
+				}
+
+			}
+
+			// Sand - Beaches 
+			if (heightToTile(world._Matrix[y][x]) == 1) {
+				mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 5, 16, 16));
+				if (heightToTile(world._Matrix[y][x - 1]) == 2 && heightToTile(world._Matrix[y-1][x]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 4, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y - 1][x]) == 2 && heightToTile(world._Matrix[y][x + 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 4, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y - 1][x]) == 2 && heightToTile(world._Matrix[y][x+1]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 4, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 2 && heightToTile(world._Matrix[y][x - 1]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 6, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 2 && heightToTile(world._Matrix[y][x + 1]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 6, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y][x - 1]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 5, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y][x + 1]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 5, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 6, 16, 16));
+				}
+				mapDrawer.setPosition(sf::Vector2f(x * 64, y * 64));
+				mapDrawer.setScale(4.0f, 4.0f);
+				mapSprite.push_back(mapDrawer);
+			}
+
+			// Grass
+			if (heightToTile(world._Matrix[y][x]) == 2) {
+				mapDrawer.setTextureRect(sf::IntRect(5 * 16, 16 * 2, 16, 16));
+				mapDrawer.setPosition(sf::Vector2f(x * 64, y * 64));
+				mapDrawer.setScale(4.0f, 4.0f);
+				mapSprite.push_back(mapDrawer);
+			}
+		}
+	}
+}
+
+
 
 void Game::run() {
 	while (window.isOpen()) {
@@ -125,12 +225,16 @@ void Game::run() {
 
 void Game::render() {
 	//World
-	world.Render(&window);
+	//world.Render(&window);
+	for (vector<sf::Sprite>::iterator it = mapSprite.begin(); it != mapSprite.end(); it++) {
+		window.draw(*it);
+	}
 
 	// Draw wall
+	/*
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
 		window.draw(wIt->rect);
-	}
+	}*/
 
 	// Draw Pickup item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
@@ -190,27 +294,16 @@ void Game::render() {
 
 	dialogBox.box.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y + window.getSize().y / 6);
 	dialogBox.text.setPosition(20 + player.rect.getPosition().x - window.getSize().x / 2, 20 + player.rect.getPosition().y + window.getSize().y / 6);
-	dialogBox.text.setString("Hi");
+	//dialogBox.text.setString("Hi");
 	//Draw dialog box
 	if (dialogBox.isShow) {
 		window.draw(dialogBox.box);
 		window.draw(dialogBox.text);
+		window.draw(stand.sprite);
 	}
 
 	
 	window.display();
-}
-
-void Game::setStandPos() {
-	if (player.direction == 1) {
-		stand.rect.setPosition(player.rect.getPosition().x + 32, player.rect.getPosition().y + 32);
-	} else 	if (player.direction == 2) {
-		stand.rect.setPosition(player.rect.getPosition().x + 32, player.rect.getPosition().y - 32);
-	} else 	if (player.direction == 3) {
-		stand.rect.setPosition(player.rect.getPosition().x - 32, player.rect.getPosition().y + 32);
-	} else 	if (player.direction == 4) {
-		stand.rect.setPosition(player.rect.getPosition().x - 32, player.rect.getPosition().y - 32);
-	}
 }
 
 void Game::inputProcess() {
@@ -221,7 +314,7 @@ void Game::inputProcess() {
 			if (!isUsingStand) {
 				yareYare.play();
 			}
-			setStandPos();
+			stand.rect.setPosition(player.rect.getPosition());
 			cout << "Stand" << endl;
 			isUsingStand = !isUsingStand;
 		}
@@ -232,16 +325,31 @@ void Game::inputProcess() {
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-		dialogBox.isShow = true;
+		dialogBox.isShow = false;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
 		enemy.rect.setPosition(
-			generateRandom(window.getSize().x),
-			generateRandom(window.getSize().y)
+			player.rect.getPosition().x + generateRandom(window.getSize().x),
+			player.rect.getPosition().y + generateRandom(window.getSize().y)
 		);
 		enemyArray.push_back(enemy);
 	}
+	/*
+	sf::Event event;
+	while (window.pollEvent(event)) {
+		switch (event.type)
+		{
+		case sf::Event::Closed:
+			window.close();
+			break;
+
+		case sf::Event::KeyPressed:
+			break;
+		default:
+			break;
+		}
+	}*/
 }
 
 void Game::clearJunk() {
@@ -340,6 +448,7 @@ void Game::collisionRelated() {
 			player.cantMoveDi = player.direction;
 			sf::Vector2f bounce[4] = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 			player.rect.move(bounce[player.direction - 1] * player.movementSpeed);
+			sf::sleep(sf::seconds(.01f));
 		}
 	}
 
@@ -401,8 +510,11 @@ void Game::enemyRelated() {
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 			if (pIt->rect.getGlobalBounds().intersects(
 				eIt->rect.getGlobalBounds())) {
+				if (eIt->isAggressive != true) {
+					dialogBox.text.setString("Ahhhhh!, You hit me!");
+					dialogBox.isShow = true;
+				}
 				eIt->isAggressive = true; //Set to chase player
-
 				// Enemy got hit
 				soundCollisionHit.play();
 				//Damage display
