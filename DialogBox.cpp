@@ -6,6 +6,17 @@ DialogBox::DialogBox() {
 	text.setFillColor(sf::Color::White);
 }
 
-void DialogBox::update(std::string str) {
-	text.setString(str);
+void DialogBox::update() {
+	curIndex++;
+	if (curIndex == conversation.size()) {
+		reset();
+		isShow = false;
+		return;
+	}
+	text.setString(conversation.at(curIndex));
+}
+
+void DialogBox::reset() {
+	curIndex = 0;
+	text.setString(conversation.at(curIndex));
 }

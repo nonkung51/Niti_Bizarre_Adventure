@@ -7,6 +7,7 @@
 
 #include "Player.h"
 #include "Entity.h"
+#include "Npc.h"
 #include "Projectile.h"
 #include "Enemy.h"
 #include "TextDisplay.h"
@@ -34,7 +35,7 @@ public:
 	bool isUsingStand = false;
 
 private:
-	sf::Clock attackClock, enemyAttackPlayerClock, aggressiveEnemyClock, switchStandClock;
+	sf::Clock attackClock, enemyAttackPlayerClock, aggressiveEnemyClock, switchStandClock, dialogClock;
 	sf::RenderWindow window;
 	sf::View view;
 
@@ -90,4 +91,8 @@ private:
 	sf::Vector2f focusPoint;
 
 	DialogBox dialogBox;
+
+	// Npc
+	vector<Npc> npcArray;
+	vector<sf::Texture> npcTexture;
 };

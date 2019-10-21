@@ -45,7 +45,7 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 		cout << "res/music/Windless Slopes.ogg not loaded." << endl;
 	}
 	music.setLoop(true);
-	music.play();
+	//music.play();
 
 	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
 		cout << "res/img/environment.png not loaded." << endl;
@@ -111,6 +111,9 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 
 	dialogBox.text.setFont(font);
 	dialogBox.text.setPosition(20, ((2 * window.getSize().y) / 3) + 20);
+	dialogBox.conversation = vector<string>{ "this is first sentence", "And this is second one" };
+	dialogBox.text.setString(dialogBox.conversation.at(0));
+	//dialogBox.update();
 	
 	//World sprite
 	if (!tiles.loadFromFile("res/img/tiles.png")) {
@@ -123,6 +126,18 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 	//world.CreateGraphics();
 	generateMap();
 
+	//Npc
+	npcTexture.push_back(sf::Texture());
+	if (!npcTexture.at(npcTexture.size() - 1).loadFromFile("res/img/stand.png")) {
+		cout << "res/img/stand.png not loaded." << endl;
+	}
+	npcArray.push_back(Npc());
+	npcArray.at(npcArray.size() - 1).sprite.setTexture(npcTexture.at(npcArray.size() - 1));
+	int spriteSizeX = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().x / 13;
+	int spriteSizeY = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().y / 21;
+	npcArray.at(npcArray.size() - 1).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
+	npcArray.at(npcArray.size() - 1).rect.setPosition({ 200, 300 });
+	npcArray.at(npcArray.size() - 1).update();
 }
 
 int heightToTile(int h) {
@@ -236,6 +251,11 @@ void Game::render() {
 		window.draw(wIt->rect);
 	}*/
 
+	//Draw npc
+	for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
+		window.draw(nIt->sprite);
+	}
+
 	// Draw Pickup item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
 		piIt->update();
@@ -299,7 +319,9 @@ void Game::render() {
 	if (dialogBox.isShow) {
 		window.draw(dialogBox.box);
 		window.draw(dialogBox.text);
-		window.draw(stand.sprite);
+		if (isUsingStand) {
+			window.draw(stand.sprite);
+		}
 	}
 
 	
@@ -319,13 +341,24 @@ void Game::inputProcess() {
 			isUsingStand = !isUsingStand;
 		}
 	}
-	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-		window.close();
+
+	sf::Time dialogTime = dialogClock.getElapsedTime();
+	if (dialogTime.asSeconds() >= .2f) {
+		dialogClock.restart();
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && dialogBox.isShow) {
+			dialogBox.update();
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+			dialogBox.isShow = !dialogBox.isShow;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+			dialogBox.conversation = vector<string>{ "2. this is first sentence", "2. And this is second one" };
+			dialogBox.reset();
+		}
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-		dialogBox.isShow = false;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+		window.close();
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
@@ -335,7 +368,7 @@ void Game::inputProcess() {
 		);
 		enemyArray.push_back(enemy);
 	}
-	/*
+	
 	sf::Event event;
 	while (window.pollEvent(event)) {
 		switch (event.type)
@@ -345,11 +378,14 @@ void Game::inputProcess() {
 			break;
 
 		case sf::Event::KeyPressed:
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
+				dialogBox.isShow = false;
+			}
 			break;
 		default:
 			break;
 		}
-	}*/
+	}
 }
 
 void Game::clearJunk() {
@@ -449,6 +485,22 @@ void Game::collisionRelated() {
 			sf::Vector2f bounce[4] = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 			player.rect.move(bounce[player.direction - 1] * player.movementSpeed);
 			sf::sleep(sf::seconds(.01f));
+		}
+	}
+
+	//Player collide with Npc
+	for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
+		if (player.rect.getGlobalBounds().intersects(nIt->rect.getGlobalBounds())) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+				dialogBox.reset();
+				dialogBox.conversation = vector<string>{ "What are you doing?", "Go away!!", "!!"};
+				dialogBox.isShow = true;
+			}
+			if (dialogBox.conversation.at(dialogBox.curIndex) == "!!") {
+				enemy.rect.setPosition(nIt->rect.getPosition());
+				enemyArray.push_back(enemy);
+				dialogBox.reset();
+			}
 		}
 	}
 
@@ -601,6 +653,9 @@ void Game::itemRelated() {
 				}
 				else if (piIt->isPowerUp) {
 					player.hp += 5;
+					if (player.hp > 10) {
+						player.hp = 10;
+					}
 					piIt->destroyed = true;
 				}
 			}

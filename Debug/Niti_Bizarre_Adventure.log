@@ -46,85 +46,85 @@ C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(113,64): warning C42
 C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(113,64): warning C4244:         [
 C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(113,64): warning C4244:             T=unsigned int
 C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(113,64): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,50): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,50): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,50): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,50): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,42): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,42): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,42): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,42): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(151,42): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,51): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,51): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,51): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,51): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,51): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,43): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,43): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,43): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,43): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(163,43): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,50): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,50): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,50): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,50): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,42): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,42): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,42): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,42): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(196,42): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,50): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,50): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,50): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,50): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,42): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,42): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,42): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,42): warning C4244:             T=float
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(204,42): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,59): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,59): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,59): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,59): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,49): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,49): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,49): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(365,49): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,59): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,59): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,59): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,59): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,49): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,49): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,49): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(375,49): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,59): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,59): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,59): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,59): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,49): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,49): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,49): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(417,49): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,59): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,59): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,59): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,59): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,49): warning C4244:         with
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,49): warning C4244:         [
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,49): warning C4244:             T=int
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(427,49): warning C4244:         ]
-C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(142): warning C4715: 'heightToTile': not all control paths return a value
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,50): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,50): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,50): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,50): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,42): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,42): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,42): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,42): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(166,42): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,51): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,51): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,51): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,51): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,51): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,43): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,43): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,43): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,43): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(178,43): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,50): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,50): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,50): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,50): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,42): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,42): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,42): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,42): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(211,42): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,50): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,50): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,50): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,50): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,50): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,42): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,42): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,42): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,42): warning C4244:             T=float
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(219,42): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,59): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,59): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,59): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,59): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,49): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,49): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,49): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(401,49): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,59): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,59): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,59): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,59): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,49): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,49): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,49): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(411,49): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,59): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,59): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,59): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,59): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,49): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,49): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,49): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(453,49): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,59): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,59): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,59): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,59): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,59): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,49): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,49): warning C4244:         with
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,49): warning C4244:         [
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,49): warning C4244:             T=int
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(463,49): warning C4244:         ]
+C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Game.cpp(157): warning C4715: 'heightToTile': not all control paths return a value
   Niti_Bizarre_Adventure.vcxproj -> C:\Users\non_t\source\repos\Niti_Bizarre_Adventure\Debug\Niti_Bizarre_Adventure.exe
