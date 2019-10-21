@@ -10,8 +10,12 @@
 using namespace std;
 
 int main() {
+	int activeButton = 0;
+	int state = 0;
+	int playingScore = 400;
+	bool isPlaying = false;
 	sf::RenderWindow window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure");
-	Game game;
+	Game game(&window, &isPlaying, &playingScore, &state);
 	window.setFramerateLimit(60);
 
 	sf::Texture logoTexture;
@@ -23,9 +27,7 @@ int main() {
 	logoSprite.setScale({ 0.15, 0.15 });
 	logoSprite.setPosition(window.getSize().x / 2 - logoTexture.getSize().x / 2 * 0.15, window.getSize().y / 4 - logoTexture.getSize().y / 2 * 0.15);
 
-	int activeButton = 0;
-	int state = 0;
-	bool isPlaying = false;
+
 	std::vector<std::string> buttonText{ "Start", "Score", "Close" };
 
 	sf::Font font;
@@ -33,21 +35,20 @@ int main() {
 		std::cout << "Can\'t load font" << std::endl;
 	}
 
+	//Output player score
+	std::ofstream fileWriter;
+	sf::String playerInput;
+
 	// Extract save files
 	std::map<int, std::string> score;
 	std::ifstream fileReader;
 	fileReader.open("save/score.txt");
 
 	std::string word;
-	//std::string save;
-	do {
-		fileReader >> word;
-		auto first_token = word.substr(0, word.find(','));
-		auto second_token = std::stoi(word.substr(word.find(',') + 1, word.length()));
-		score[second_token] = first_token;
-	} while (fileReader.good());
+
 	while (window.isOpen()) {
 		if (!isPlaying) {
+			window.setView(sf::View({ 1080/2,720/2 }, { 1080, 720 }));
 			window.clear(sf::Color(168, 109, 171));
 			if (state == 0) {
 				window.draw(logoSprite);
@@ -69,13 +70,19 @@ int main() {
 				text.setCharacterSize(30);
 				text.setFillColor(sf::Color::White);
 
+				do {
+					fileReader >> word;
+					auto first_token = word.substr(0, word.find(','));
+					auto second_token = std::stoi(word.substr(word.find(',') + 1, word.length()));
+					score[second_token] = first_token;
+				} while (fileReader.good());
+
 				std::map<int, std::string>::iterator end = score.end();
 				std::map<int, std::string>::iterator beg = score.begin();
 				end--;
 				beg--;
 				int currentDisplay = 0;
 				for (std::map<int, std::string>::iterator it = end; it != beg; it--) {
-					//std::cout << it->first << " : " << it->second << std::endl;
 					text.setString(it->second);
 					text.setPosition(350, 400 + 40 * currentDisplay);
 					window.draw(text);
@@ -87,6 +94,19 @@ int main() {
 				currentDisplay = 0;
 				text.setString("Enter to go back");
 				text.setPosition(350, 650);
+				window.draw(text);
+			}
+			if (state == 2) {
+				window.draw(logoSprite);
+				sf::Text text("", font);
+				text.setString("Enter your name: ");
+				text.setPosition(350, 400);
+				window.draw(text);
+				text.setString(playerInput);
+				text.setPosition(600, 450);
+				window.draw(text);
+				text.setString("Press enter to save");
+				text.setPosition(450, 600);
 				window.draw(text);
 			}
 
@@ -107,9 +127,10 @@ int main() {
 							if (activeButton == 2) {
 								return 0;
 							}
-						}
-						else {
+						} else if(state == 1){
 							state = 0;
+						} else if (state == 2) {
+							std::cout << "enter" << std::endl;
 						}
 					}
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
@@ -128,11 +149,22 @@ int main() {
 				if (event.type == sf::Event::Closed) {
 					return 0;
 				}
+				if (event.type == sf::Event::TextEntered && state == 2) {
+					if (event.text.unicode == 13) {
+						fileWriter.open("save/score.txt", std::ios::out | std::ios::app);
+						fileWriter << playerInput.toAnsiString() << "," << playingScore << '\n';
+						fileWriter.close();
+						playerInput.clear();
+						state = 0;
+						playingScore = 0;
+					}
+					playerInput += event.text.unicode;
+				}
 			}
 		}
 		else {
 			game.run();
 		}
 	}
-	//return 0;
+	return 0;
 }

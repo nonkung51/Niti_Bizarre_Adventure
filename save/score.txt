@@ -1,3 +1,6 @@
-Non,54521
-John,52265
-Niraya,52221
+johnLennon,400
+Isacc,400
+john,400
+yay,5000
+ssssss,5000
+niti,420

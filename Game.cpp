@@ -2,12 +2,16 @@
 #include "DialogBox.h"
 #include <iostream>
 
-Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(sf::FloatRect(200, 200, 300, 200)), dialogBox() {
-	window.setFramerateLimit(60);
+Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::FloatRect(200, 200, 300, 200)), dialogBox() {
+	window = w;
+	isPlaying = playing;
+	playingScore = score;
+	state = st;
+	window->setFramerateLimit(60);
 
-	view.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+	view.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
 	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
-	window.setView(view);
+	window->setView(view);
 
 	srand(time(NULL));
 
@@ -45,7 +49,7 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 		cout << "res/music/Windless Slopes.ogg not loaded." << endl;
 	}
 	music.setLoop(true);
-	//music.play();
+	music.play();
 
 	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
 		cout << "res/img/environment.png not loaded." << endl;
@@ -106,11 +110,11 @@ Game::Game() : window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure"), view(
 	isUsingStandShow.setFont(font);
 	isUsingStandShow.setCharacterSize(25);
 
-	dialogBox.box.setPosition(0, 2 * window.getSize().y / 3);
-	dialogBox.box.setSize(sf::Vector2f(window.getSize().x, window.getSize().y / 3));
+	dialogBox.box.setPosition(0, 2 * window->getSize().y / 3);
+	dialogBox.box.setSize(sf::Vector2f(window->getSize().x, window->getSize().y / 3));
 
 	dialogBox.text.setFont(font);
-	dialogBox.text.setPosition(20, ((2 * window.getSize().y) / 3) + 20);
+	dialogBox.text.setPosition(20, ((2 * window->getSize().y) / 3) + 20);
 	dialogBox.conversation = vector<string>{ "this is first sentence", "And this is second one" };
 	dialogBox.text.setString(dialogBox.conversation.at(0));
 	//dialogBox.update();
@@ -224,75 +228,96 @@ void Game::generateMap() {
 	}
 }
 
+void Game::reset() {
+	cout << "reset" << endl;
+	view.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
+	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
+	window->setView(view);
 
+	player.sprite.setTextureRect(sf::IntRect(0, texturePlayer.getSize().y / 21 * 10,
+		texturePlayer.getSize().x / 13, texturePlayer.getSize().y / 21));
+	stand.sprite.setTextureRect(sf::IntRect(0, texturePlayer.getSize().y / 21 * 10,
+		texturePlayer.getSize().x / 13, texturePlayer.getSize().y / 21));
+
+	player.hp = 10;
+
+	enemyArray.clear();
+	projectileArray.clear();
+	textDisplayArray.clear();
+	pickupArray.clear();
+	wallArray.clear();
+	mapSprite.clear();
+
+	world.CreateMatrix();
+	world.Interpolation();
+	generateMap();
+}
 
 void Game::run() {
-	while (window.isOpen()) {
-		window.clear();
-		view.setCenter(player.rect.getPosition());
-		window.setView(view);
-		update();
-		clearJunk();
-		inputProcess();
-		render();
-	}
+	window->clear();
+	view.setCenter(player.rect.getPosition());
+	window->setView(view);
+	update();
+	clearJunk();
+	inputProcess();
+	render();
 }
 
 void Game::render() {
 	//World
 	//world.Render(&window);
 	for (vector<sf::Sprite>::iterator it = mapSprite.begin(); it != mapSprite.end(); it++) {
-		window.draw(*it);
+		window->draw(*it);
 	}
 
 	// Draw wall
 	/*
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
-		window.draw(wIt->rect);
+		window->draw(wIt->rect);
 	}*/
 
 	//Draw npc
 	for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
-		window.draw(nIt->sprite);
+		window->draw(nIt->sprite);
 	}
 
 	// Draw Pickup item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
 		piIt->update();
-		window.draw(piIt->sprite);
+		window->draw(piIt->sprite);
 	}
 
 	//Update Bullet
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
 		pIt->update();
-		//window.draw(pIt->sprite);
-		//window.draw(pIt->rect);
+		//window->draw(pIt->sprite);
+		//window->draw(pIt->rect);
 	}
 
 	//Update Enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 		eIt->update();
 		eIt->updateMovement();
-		window.draw(eIt->text);
-		window.draw(eIt->rect);
-		window.draw(eIt->sprite);
+		window->draw(eIt->text);
+		window->draw(eIt->rect);
+		window->draw(eIt->sprite);
 	}
 
 	//drawing coin
 	coinShow.setString("Coin : " + to_string(player.coin));
-	coinShow.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y - window.getSize().y / 2);
-	window.draw(coinShow);
+	coinShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2);
+	window->draw(coinShow);
 	//drawing player hp
 	hpShow.setString("HP : " + to_string(player.hp) + "/" + to_string(player.maxHp));
-	hpShow.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y - window.getSize().y / 2 + 24);
-	window.draw(hpShow);
+	hpShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2 + 24);
+	window->draw(hpShow);
 	//drawing is using stand
 	if (isUsingStand) {
 		isUsingStandShow.setString("Stand on");
-		isUsingStandShow.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y - window.getSize().y / 2 + 48);
-		window.draw(isUsingStandShow);
+		isUsingStandShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2 + 48);
+		window->draw(isUsingStandShow);
 	}
-	window.draw(player.sprite);
+	window->draw(player.sprite);
 
 	if (!dialogBox.isShow) {
 		if (!isUsingStand) {
@@ -300,7 +325,7 @@ void Game::render() {
 			player.update();
 		}
 		else {
-			window.draw(stand.sprite);
+			window->draw(stand.sprite);
 			stand.updateMovement(false);
 			stand.update();
 		}
@@ -309,23 +334,23 @@ void Game::render() {
 	// Draw damage effect
 	for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
 		tIt->update();
-		window.draw(tIt->text);
+		window->draw(tIt->text);
 	}
 
-	dialogBox.box.setPosition(player.rect.getPosition().x - window.getSize().x / 2, player.rect.getPosition().y + window.getSize().y / 6);
-	dialogBox.text.setPosition(20 + player.rect.getPosition().x - window.getSize().x / 2, 20 + player.rect.getPosition().y + window.getSize().y / 6);
+	dialogBox.box.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y + window->getSize().y / 6);
+	dialogBox.text.setPosition(20 + player.rect.getPosition().x - window->getSize().x / 2, 20 + player.rect.getPosition().y + window->getSize().y / 6);
 	//dialogBox.text.setString("Hi");
 	//Draw dialog box
 	if (dialogBox.isShow) {
-		window.draw(dialogBox.box);
-		window.draw(dialogBox.text);
+		window->draw(dialogBox.box);
+		window->draw(dialogBox.text);
 		if (isUsingStand) {
-			window.draw(stand.sprite);
+			window->draw(stand.sprite);
 		}
 	}
 
 	
-	window.display();
+	window->display();
 }
 
 void Game::inputProcess() {
@@ -337,7 +362,6 @@ void Game::inputProcess() {
 				yareYare.play();
 			}
 			stand.rect.setPosition(player.rect.getPosition());
-			cout << "Stand" << endl;
 			isUsingStand = !isUsingStand;
 		}
 	}
@@ -348,33 +372,22 @@ void Game::inputProcess() {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && dialogBox.isShow) {
 			dialogBox.update();
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-			dialogBox.isShow = !dialogBox.isShow;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-			dialogBox.conversation = vector<string>{ "2. this is first sentence", "2. And this is second one" };
-			dialogBox.reset();
-		}
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-		window.close();
+		window->close();
 	}
-
+	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
-		enemy.rect.setPosition(
-			player.rect.getPosition().x + generateRandom(window.getSize().x),
-			player.rect.getPosition().y + generateRandom(window.getSize().y)
-		);
-		enemyArray.push_back(enemy);
+		reset();
 	}
 	
 	sf::Event event;
-	while (window.pollEvent(event)) {
+	while (window->pollEvent(event)) {
 		switch (event.type)
 		{
 		case sf::Event::Closed:
-			window.close();
+			window->close();
 			break;
 
 		case sf::Event::KeyPressed:
@@ -534,29 +547,33 @@ void Game::collisionRelated() {
 
 void Game::enemyRelated() {
 	// Enemy attack player
+	
 	sf::Time enemyAttackPlayer = enemyAttackPlayerClock.getElapsedTime();
 	if (enemyAttackPlayer.asSeconds() >= 0.30f) {
 		enemyAttackPlayerClock.restart();
-		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-			if (player.rect.getGlobalBounds().intersects(eIt->rect.getGlobalBounds())) {
-				isUsingStand = false; // stop using stand if player got hit
-				eIt->isAggressive = true; // enemy got agressive when see player
+		for (auto &enemy : enemyArray) {
+			if (player.rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds())) {
+				isUsingStand = false;
+				enemy.isAggressive = true;
+				player.hp -= enemy.attackDamage;
 				stand.rect.setPosition(player.rect.getPosition());
 				soundPlayerHit.play();
-
 				textDisplay.text.setPosition(
 					player.rect.getPosition().x + player.rect.getSize().x / 2,
 					player.rect.getPosition().y + player.rect.getSize().y
 				);
 				textDisplay.text.setFillColor(sf::Color::Yellow);
-				textDisplay.text.setString(to_string(eIt->attackDamage));
+				textDisplay.text.setString(to_string(enemy.attackDamage));
 				textDisplayArray.push_back(textDisplay);
-
-				player.hp -= eIt->attackDamage;
+				if (player.hp <= 0) {
+					reset();
+					*isPlaying = false;
+					*state = 2;
+				}
 			}
 		}
 	}
-
+	
 	//Check collision attack enemy
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
@@ -585,6 +602,7 @@ void Game::enemyRelated() {
 				if (eIt->hp <= 0) {
 					eIt->alive = false;
 				}
+				*playingScore += pIt->attackDamage * 100;
 			}
 		}
 	}
@@ -595,26 +613,21 @@ void Game::enemyRelated() {
 		if (eIt->isAggressive) {
 			if (aggressiveEnemyTimer.asSeconds() >= 1.0f) {
 				aggressiveEnemyClock.restart();
-				cout << eIt->direction << endl;
 				if (abs(player.rect.getPosition().x - eIt->rect.getPosition().x) >=
 					abs(player.rect.getPosition().y - eIt->rect.getPosition().y)) {
 					if (player.rect.getPosition().x > eIt->rect.getPosition().x) {
 						eIt->direction = 4;
-						cout << "player is to the right" << endl;
 					}
 					else if (player.rect.getPosition().x < eIt->rect.getPosition().x) {
 						eIt->direction = 3;
-						cout << "player is to the left" << endl;
 					}
 				}
 				else {
 					if (player.rect.getPosition().y > eIt->rect.getPosition().y) {
 						eIt->direction = 2;
-						cout << "player is to the bottom" << endl;
 					}
 					else if (player.rect.getPosition().y < eIt->rect.getPosition().y) {
 						eIt->direction = 1;
-						cout << "player is to the top" << endl;
 					}
 				}
 			}
@@ -661,7 +674,7 @@ void Game::itemRelated() {
 			}
 			else {
 				// draw cost
-				window.draw(piIt->text);
+				window->draw(piIt->text);
 				if (piIt->isPowerUp && player.coin >= piIt->cost
 					&& sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
 					player.coin -= piIt->cost;

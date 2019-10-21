@@ -20,7 +20,7 @@
 
 class Game {
 public:
-	Game();
+	Game(sf::RenderWindow*, bool*, int*, int*);
 	void run();
 	void update();
 	void render();
@@ -31,12 +31,15 @@ public:
 	void playerAttack();
 	void itemRelated();
 	void generateMap();
+	void reset();
 
 	bool isUsingStand = false;
+	sf::RenderWindow *window;
+	int* state;
+	int* playingScore = 0;
 
 private:
 	sf::Clock attackClock, enemyAttackPlayerClock, aggressiveEnemyClock, switchStandClock, dialogClock;
-	sf::RenderWindow window;
 	sf::View view;
 
 	//Resources
@@ -95,4 +98,7 @@ private:
 	// Npc
 	vector<Npc> npcArray;
 	vector<sf::Texture> npcTexture;
+
+	//connect with menu
+	bool* isPlaying;
 };
