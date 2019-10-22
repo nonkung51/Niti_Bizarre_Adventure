@@ -72,6 +72,8 @@ private:
 	vector<Projectile> projectileArray;
 	Projectile projectile;
 
+	vector<Enemy> enemyType = { Enemy(), Enemy(), Enemy(), Enemy() };
+	vector<sf::Texture> enemyTypeTexture{ sf::Texture() , sf::Texture() , sf::Texture() , sf::Texture() }; // 4 type of enemy
 	vector<Enemy> enemyArray;
 	Enemy enemy;
 
@@ -98,9 +100,12 @@ private:
 	DialogBox dialogBox;
 
 	// Npc
-	vector<Npc> npcArray;
-	vector<sf::Texture> npcTexture;
+	vector<Npc> npcArray = {Npc()};
+	vector<sf::Texture> npcTexture = {sf::Texture()};
 
 	//connect with menu
 	bool* isPlaying;
+
+	void enemySetup();
+	void npcSetup();
 };

@@ -147,20 +147,12 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 	//world.CreateGraphics();
 	generateMap();
 
-	//Npc
-	npcTexture.push_back(sf::Texture());
-	if (!npcTexture.at(npcTexture.size() - 1).loadFromFile("res/img/stand.png")) {
-		cout << "res/img/stand.png not loaded." << endl;
-	}
-	npcArray.push_back(Npc());
-	npcArray.at(npcArray.size() - 1).sprite.setTexture(npcTexture.at(npcArray.size() - 1));
-	int spriteSizeX = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().x / 13;
-	int spriteSizeY = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().y / 21;
-	npcArray.at(npcArray.size() - 1).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
-	npcArray.at(npcArray.size() - 1).rect.setPosition({ 200, 300 });
-	npcArray.at(npcArray.size() - 1).update();
-	
 	generateGameObjects();
+	//Npc
+	npcSetup();
+
+	// Enemy Type
+	enemySetup();
 }
 
 
@@ -262,8 +254,6 @@ void Game::generateMap() {
 }
 
 void Game::generateGameObjects() {
-	
-
 	int treeX, treeY;
 	Wall tree;
 	tree.sprite.setTexture(tiles);
@@ -331,7 +321,7 @@ void Game::generateGameObjects() {
 	int enemyX;
 	int enemyY;
 	//gen enemy
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 16; i++) {
 		bool flagEnemy = true;
 
 		while (flagEnemy) {
@@ -342,36 +332,89 @@ void Game::generateGameObjects() {
 				flagEnemy = true;
 			}
 		}
-
-		enemy.rect.setPosition(enemyX * 64, enemyY * 64);
-		enemyArray.push_back(enemy);
+		int type = generateRandom0(3);
+		enemyType[type].rect.setPosition(enemyX * 64, enemyY * 64);
+		enemyArray.push_back(enemyType[type]);
 	}
 }
 
 void Game::remap() {
-	cout << *playingScore << endl;
 	view.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
 	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
 	window->setView(view);
-
+	
 	player.sprite.setTextureRect(sf::IntRect(0, texturePlayer.getSize().y / 21 * 10,
 		texturePlayer.getSize().x / 13, texturePlayer.getSize().y / 21));
 	stand.sprite.setTextureRect(sf::IntRect(0, texturePlayer.getSize().y / 21 * 10,
 		texturePlayer.getSize().x / 13, texturePlayer.getSize().y / 21));
 
-	player.hp = 10;
-
+	player.hp = player.maxHp;
+	
 	enemyArray.clear();
 	projectileArray.clear();
 	textDisplayArray.clear();
 	pickupArray.clear();
 	wallArray.clear();
 	mapSprite.clear();
-
+	//npcArray.clear();
+	
 	world.CreateMatrix();
 	world.Interpolation();
 	generateMap();
 	generateGameObjects();
+
+	//Npc
+	npcSetup();
+}
+
+void Game::enemySetup() {
+	enemyTypeTexture[0].loadFromFile("res/img/enemy2.png");
+	enemyTypeTexture[1].loadFromFile("res/img/enemy3.png");
+	enemyTypeTexture[2].loadFromFile("res/img/enemy4.png");
+	enemyTypeTexture[3].loadFromFile("res/img/enemy5.png");
+
+	enemyType[0].sprite.setTexture(enemyTypeTexture[0]);
+	enemyType[0].text.setFont(font);
+	enemyType[0].text.setCharacterSize(8);
+	enemyType[0].text.setFillColor(sf::Color::Red);
+	enemyType[0].text.setString(to_string(enemyType[0].hp) + "/" + to_string(enemyType[0].maxHp));
+
+	enemyType[1].sprite.setTexture(enemyTypeTexture[1]);
+	enemyType[1].text.setFont(font);
+	enemyType[1].text.setCharacterSize(8);
+	enemyType[1].text.setFillColor(sf::Color::Red);
+	enemyType[1].text.setString(to_string(enemyType[1].hp) + "/" + to_string(enemyType[1].maxHp));
+
+	enemyType[2].sprite.setTexture(enemyTypeTexture[2]);
+	enemyType[2].text.setFont(font);
+	enemyType[2].text.setCharacterSize(8);
+	enemyType[2].text.setFillColor(sf::Color::Red);
+	enemyType[2].text.setString(to_string(enemyType[2].hp) + "/" + to_string(enemyType[2].maxHp));
+
+	enemyType[3].sprite.setTexture(enemyTypeTexture[3]);
+	enemyType[3].text.setFont(font);
+	enemyType[3].text.setCharacterSize(8);
+	enemyType[3].text.setFillColor(sf::Color::Red);
+	enemyType[3].text.setString(to_string(enemyType[3].hp) + "/" + to_string(enemyType[3].maxHp));
+}
+
+void Game::npcSetup() {
+	//npcTexture.push_back(sf::Texture());
+	if (!npcTexture.at(npcTexture.size() - 1).loadFromFile("res/img/stand.png")) {
+		cout << "res/img/stand.png not loaded." << endl;
+	}
+	//npcArray.push_back(Npc());
+	npcArray.at(npcArray.size() - 1).name = "Hibari";
+	npcArray.at(npcArray.size() - 1).conversation = vector<string>{ "What are you doing?", "Go away!!", "!!" };
+	npcArray.at(npcArray.size() - 1).endConversation = vector<string>{ "Go away!!", "You kill my stand", "!!" };
+	npcArray.at(npcArray.size() - 1).stand = enemy;
+	npcArray.at(npcArray.size() - 1).stand.owner = npcArray.at(npcArray.size() - 1).name;
+	npcArray.at(npcArray.size() - 1).sprite.setTexture(npcTexture.at(npcArray.size() - 1));
+	int spriteSizeX = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().x / 13;
+	int spriteSizeY = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().y / 21;
+	npcArray.at(npcArray.size() - 1).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
+	npcArray.at(npcArray.size() - 1).rect.setPosition({ player.rect.getPosition().x + 50, player.rect.getPosition().y +50 });
+	npcArray.at(npcArray.size() - 1).update();
 }
 
 void Game::run() {
@@ -453,26 +496,25 @@ void Game::render() {
 		}
 	}
 
-	// Draw damage effect
-	for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
-		tIt->update();
-		window->draw(tIt->text);
-	}
+// Draw damage effect
+for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
+	tIt->update();
+	window->draw(tIt->text);
+}
 
-	dialogBox.box.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y + window->getSize().y / 6);
-	dialogBox.text.setPosition(20 + player.rect.getPosition().x - window->getSize().x / 2, 20 + player.rect.getPosition().y + window->getSize().y / 6);
-	//dialogBox.text.setString("Hi");
-	//Draw dialog box
-	if (dialogBox.isShow) {
-		window->draw(dialogBox.box);
-		window->draw(dialogBox.text);
-		if (isUsingStand) {
-			window->draw(stand.sprite);
-		}
+dialogBox.box.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y + window->getSize().y / 6);
+dialogBox.text.setPosition(20 + player.rect.getPosition().x - window->getSize().x / 2, 20 + player.rect.getPosition().y + window->getSize().y / 6);
+//dialogBox.text.setString("Hi");
+//Draw dialog box
+if (dialogBox.isShow) {
+	window->draw(dialogBox.box);
+	window->draw(dialogBox.text);
+	if (isUsingStand) {
+		window->draw(stand.sprite);
 	}
+}
 
-	
-	window->display();
+window->display();
 }
 
 void Game::inputProcess() {
@@ -499,11 +541,11 @@ void Game::inputProcess() {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 		window->close();
 	}
-	
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
 		remap();
 	}
-	
+
 	sf::Event event;
 	while (window->pollEvent(event)) {
 		switch (event.type)
@@ -526,7 +568,7 @@ void Game::inputProcess() {
 void Game::clearJunk() {
 	//Delete dead enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-		if (eIt->alive == false) {
+		if (eIt->alive == false && eIt->owner == "") {
 			//random generate coin
 			if (generateRandom(3) == 1) {
 				pickup.inShop = false;
@@ -549,6 +591,16 @@ void Game::clearJunk() {
 			}
 			enemyArray.erase(eIt);
 			break;
+		}
+	}
+
+	//player kill npc stand
+	for (auto& enemy : enemyArray) {
+		for (vector <Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
+			if (enemy.hp <= 0 && enemy.owner == nIt->name) {
+				cout << "you masaka" << endl;
+				remap();
+			}
 		}
 	}
 
@@ -628,12 +680,12 @@ void Game::collisionRelated() {
 		if (player.rect.getGlobalBounds().intersects(nIt->rect.getGlobalBounds())) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
 				dialogBox.reset();
-				dialogBox.conversation = vector<string>{ "What are you doing?", "Go away!!", "!!"};
+				dialogBox.conversation = nIt->conversation;
 				dialogBox.isShow = true;
 			}
 			if (dialogBox.conversation.at(dialogBox.curIndex) == "!!") {
-				enemy.rect.setPosition(nIt->rect.getPosition());
-				enemyArray.push_back(enemy);
+				nIt->stand.rect.setPosition(nIt->rect.getPosition());
+				enemyArray.push_back(nIt->stand);
 				dialogBox.reset();
 			}
 		}
@@ -729,6 +781,8 @@ void Game::enemyRelated() {
 		}
 	}
 
+
+
 	//Aggressive enemy
 	sf::Time aggressiveEnemyTimer = aggressiveEnemyClock.getElapsedTime();
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
@@ -788,8 +842,8 @@ void Game::itemRelated() {
 				}
 				else if (piIt->isPowerUp) {
 					player.hp += 5;
-					if (player.hp > 10) {
-						player.hp = 10;
+					if (player.hp > player.maxHp) {
+						player.hp = player.maxHp;
 					}
 					piIt->destroyed = true;
 				}

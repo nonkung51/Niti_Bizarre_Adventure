@@ -20,8 +20,8 @@ void Enemy::updateMovement(bool isAttack) {
 	lastAnim = animClock.getElapsedTime();
 	if (lastAnim.asSeconds() > 0.04f) {
 		animClock.restart();
-		int spriteSizeX = sprite.getTexture()->getSize().x / 13;
-		int spriteSizeY = sprite.getTexture()->getSize().y / 21;
+		int spriteSizeX = 64;//sprite.getTexture()->getSize().x / 13;
+		int spriteSizeY = 64;//sprite.getTexture()->getSize().y / 21;
 		if (isPlayingAttack) {
 			std::cout << "attack" << std::endl;
 			int animDi[4] = { 4,6,5,7 };
