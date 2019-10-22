@@ -31,12 +31,14 @@ public:
 	void playerAttack();
 	void itemRelated();
 	void generateMap();
-	void reset();
+	void generateGameObjects();
+	void remap();
 
 	bool isUsingStand = false;
 	sf::RenderWindow *window;
 	int* state;
 	int* playingScore = 0;
+	int currentStage = 1;
 
 private:
 	sf::Clock attackClock, enemyAttackPlayerClock, aggressiveEnemyClock, switchStandClock, dialogClock;

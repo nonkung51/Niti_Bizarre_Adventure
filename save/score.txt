@@ -1,6 +1,7 @@
-johnLennon,400
-Isacc,400
-john,400
-yay,5000
-ssssss,5000
-niti,420
+
+niti,2500
+wksksk,500
+c,500
+j,0
+d,500
+niti,100

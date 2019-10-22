@@ -18,7 +18,7 @@ void Player::updateMovement(bool isPlayAttack) {
 		isPlayingAttack = true;
 	}
 	lastAnim = clock.getElapsedTime();
-	if (lastAnim.asSeconds() > 0.01) {
+	if (lastAnim.asSeconds() > 0.01f) {
 		clock.restart();
 		int spriteSizeX = sprite.getTexture()->getSize().x / 13;
 		int spriteSizeY = sprite.getTexture()->getSize().y / 21;

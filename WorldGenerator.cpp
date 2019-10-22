@@ -13,10 +13,10 @@ void WorldGenerator::CreateMatrix()
 			_Matrix[y][x] = 0;
 		}
 	}
-
-	for (int y = 0; y < 88; y = y + 8)
+	//start from 16 end at 72 to create a border
+	for (int y = 16; y < 72; y = y + 8)
 	{
-		for (int x = 0; x < 88; x = x + 8)
+		for (int x = 16; x < 72; x = x + 8)
 		{
 			/* Fill Matrix with random values */
 			_Matrix[y][x] = rand() % 100;
@@ -59,6 +59,15 @@ void WorldGenerator::Interpolation()
 			}
 		}
 	}
+
+	//create border
+	/*for (int x = 0; x < 88; x++) {
+		for (int y = 0; y < 88; y++ ) {
+			if (x + y >= 140) {
+				_Matrix[y][x] = 0;
+			}
+		}
+	}*/
 }
 
 void WorldGenerator::CreateGraphics()

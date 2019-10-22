@@ -12,7 +12,7 @@ using namespace std;
 int main() {
 	int activeButton = 0;
 	int state = 0;
-	int playingScore = 400;
+	int playingScore = 0;
 	bool isPlaying = false;
 	sf::RenderWindow window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure");
 	Game game(&window, &isPlaying, &playingScore, &state);

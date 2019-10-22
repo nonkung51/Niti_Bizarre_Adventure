@@ -2,6 +2,23 @@
 #include "DialogBox.h"
 #include <iostream>
 
+int heightToTile(int h) {
+	//mountain
+	if (h < 35) {
+		return 0;
+	}
+
+	// grass
+	if (h > 34 && h < 50) {
+		return 1;
+	}
+
+	// sand
+	if (h > 49) {
+		return 2;
+	}
+}
+
 Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::FloatRect(200, 200, 300, 200)), dialogBox() {
 	window = w;
 	isPlaying = playing;
@@ -63,8 +80,8 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 		cout << "res/img/stand.png not loaded." << endl;
 	}
 
-	if (!textureEnemy.loadFromFile("res/img/enemy.png")) {
-		cout << "res/img/enemy.png not loaded." << endl;
+	if (!textureEnemy.loadFromFile("res/img/enemy2.png")) {
+		cout << "res/img/enemy2.png not loaded." << endl;
 	}
 
 	if (!textureCoin.loadFromFile("res/img/item.png")) {
@@ -99,7 +116,7 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 	enemy.text.setFillColor(sf::Color::Red);
 	enemy.text.setString(to_string(enemy.hp) + "/" + to_string(enemy.maxHp));
 	enemy.rect.setPosition(500, 200);
-	enemyArray.push_back(enemy);
+	//enemyArray.push_back(enemy);
 
 	textDisplay.text.setFont(font);
 
@@ -142,31 +159,47 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 	npcArray.at(npcArray.size() - 1).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
 	npcArray.at(npcArray.size() - 1).rect.setPosition({ 200, 300 });
 	npcArray.at(npcArray.size() - 1).update();
+	
+	generateGameObjects();
 }
 
-int heightToTile(int h) {
-	if (h < 35) {
-		return 0;
-	}
-
-	// Sand - Beaches 
-	if (h > 34 && h < 50) {
-		return 1;
-	}
-
-	// Grass
-	if (h > 49) {
-		return 2;
-	}
-}
 
 void Game::generateMap() {
 	mapDrawer.setTexture(tiles);
 	for (int y = 0; y < 89; y++) {
 		for (int x = 0; x < 89; x++) {
-			// water
+			// mountain (set wall so people can't pass through)
 			if (heightToTile(world._Matrix[y][x]) == 0) {
-				mapDrawer.setTextureRect(sf::IntRect(13 * 16, 16 * 0, 16, 16));
+				mapDrawer.setTextureRect(sf::IntRect(5 * 16, 16 * 2, 16, 16));
+				/////
+				if (heightToTile(world._Matrix[y][x - 1]) == 1 && heightToTile(world._Matrix[y - 1][x]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(4 * 16, 16 * 1, 16, 16));
+				}
+				//else if (heightToTile(world._Matrix[y - 1][x]) == 1 && heightToTile(world._Matrix[y][x + 1]) == 2) {
+				//	mapDrawer.setTextureRect(sf::IntRect(6 * 16, 16 * 1, 16, 16));
+				//}
+				else if (heightToTile(world._Matrix[y - 1][x]) == 1 && heightToTile(world._Matrix[y][x + 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(6 * 16, 16 * 1, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 1 && heightToTile(world._Matrix[y][x - 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(4 * 16, 16 * 3, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 1 && heightToTile(world._Matrix[y][x + 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(6 * 16, 16 * 3, 16, 16));
+				}//
+				else if (heightToTile(world._Matrix[y][x - 1]) != 0) {
+					mapDrawer.setTextureRect(sf::IntRect(4 * 16, 16 * 2, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y][x + 1]) != 0) {
+					mapDrawer.setTextureRect(sf::IntRect(6 * 16, 16 * 2, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) != 0) {
+					mapDrawer.setTextureRect(sf::IntRect(5 * 16, 16 * 3, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y - 1][x]) != 0) {
+					mapDrawer.setTextureRect(sf::IntRect(5 * 16, 16 * 1, 16, 16));
+				}
+				/////
 				mapDrawer.setPosition(sf::Vector2f(x * 64, y * 64));
 				mapDrawer.setScale(4.0f, 4.0f);
 				mapSprite.push_back(mapDrawer);
@@ -185,41 +218,41 @@ void Game::generateMap() {
 
 			}
 
-			// Sand - Beaches 
+			// grass
 			if (heightToTile(world._Matrix[y][x]) == 1) {
-				mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 5, 16, 16));
-				if (heightToTile(world._Matrix[y][x - 1]) == 2 && heightToTile(world._Matrix[y-1][x]) == 2) {
-					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 4, 16, 16));
-				}
-				else if (heightToTile(world._Matrix[y - 1][x]) == 2 && heightToTile(world._Matrix[y][x + 1]) == 1) {
-					mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 4, 16, 16));
-				}
-				else if (heightToTile(world._Matrix[y - 1][x]) == 2 && heightToTile(world._Matrix[y][x+1]) == 2) {
-					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 4, 16, 16));
-				}
-				else if (heightToTile(world._Matrix[y + 1][x]) == 2 && heightToTile(world._Matrix[y][x - 1]) == 2) {
-					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 6, 16, 16));
-				}
-				else if (heightToTile(world._Matrix[y + 1][x]) == 2 && heightToTile(world._Matrix[y][x + 1]) == 2) {
-					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 6, 16, 16));
-				}
-				else if (heightToTile(world._Matrix[y][x - 1]) == 2) {
-					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 5, 16, 16));
-				}
-				else if (heightToTile(world._Matrix[y][x + 1]) == 2) {
-					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 5, 16, 16));
-				}
-				else if (heightToTile(world._Matrix[y + 1][x]) == 2) {
-					mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 6, 16, 16));
-				}
+				mapDrawer.setTextureRect(sf::IntRect(5 * 16, 16 * 2, 16, 16));
 				mapDrawer.setPosition(sf::Vector2f(x * 64, y * 64));
 				mapDrawer.setScale(4.0f, 4.0f);
 				mapSprite.push_back(mapDrawer);
 			}
 
-			// Grass
+			// sand
 			if (heightToTile(world._Matrix[y][x]) == 2) {
-				mapDrawer.setTextureRect(sf::IntRect(5 * 16, 16 * 2, 16, 16));
+				mapDrawer.setTextureRect(sf::IntRect(1 * 16, 5 * 16, 16, 16));
+				if (heightToTile(world._Matrix[y][x - 1]) == 1 && heightToTile(world._Matrix[y - 1][x]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 4, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y - 1][x]) == 1 && heightToTile(world._Matrix[y][x + 1]) == 2) {
+					mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 4, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y - 1][x]) == 1 && heightToTile(world._Matrix[y][x + 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 4, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 1 && heightToTile(world._Matrix[y][x - 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 6, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 1 && heightToTile(world._Matrix[y][x + 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 6, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y][x - 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(0 * 16, 16 * 5, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y][x + 1]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(2 * 16, 16 * 5, 16, 16));
+				}
+				else if (heightToTile(world._Matrix[y + 1][x]) == 1) {
+					mapDrawer.setTextureRect(sf::IntRect(1 * 16, 16 * 6, 16, 16));
+				}
 				mapDrawer.setPosition(sf::Vector2f(x * 64, y * 64));
 				mapDrawer.setScale(4.0f, 4.0f);
 				mapSprite.push_back(mapDrawer);
@@ -228,8 +261,95 @@ void Game::generateMap() {
 	}
 }
 
-void Game::reset() {
-	cout << "reset" << endl;
+void Game::generateGameObjects() {
+	
+
+	int treeX, treeY;
+	Wall tree;
+	tree.sprite.setTexture(tiles);
+	tree.sprite.setTextureRect(sf::IntRect(6 * 16, 5 * 16, 32, 32));
+	tree.sprite.setScale(sf::Vector2f(4.f, 4.f));
+
+	//gen tree
+	for (int i = 0; i < 55; i++) {
+		bool flagTree = true;
+
+		while (flagTree) {
+			treeX = generateRandom0(89);
+			treeY = generateRandom0(89);
+			flagTree = false;
+			if (heightToTile(world._Matrix[treeY][treeX]) != 1) {
+				flagTree = true;
+			}
+		}
+
+		tree.rect.setPosition(treeX * 64 + 32, treeY * 64 + 64);
+		tree.sprite.setPosition(treeX * 64, treeY * 64);
+		wallArray.push_back(tree);
+	}
+
+	// gen boulders
+
+	int boulderX, boulderY;
+	Wall boulder;
+	boulder.sprite.setTexture(tiles);
+	boulder.sprite.setTextureRect(sf::IntRect(9 * 16, 5 * 16, 16, 16));
+	boulder.sprite.setScale(sf::Vector2f(4.f, 4.f));
+
+	for (int i = 0; i < 20; i++) {
+		bool flagBoulder = true;
+
+		while (flagBoulder) {
+			boulderX = generateRandom0(89);
+			boulderY = generateRandom0(89);
+			flagBoulder = false;
+			if (heightToTile(world._Matrix[boulderY][boulderX]) != 1) {
+				flagBoulder = true;
+			}
+		}
+
+		boulder.rect.setPosition(boulderX * 64, boulderY * 64);
+		boulder.sprite.setPosition(boulderX * 64, boulderY * 64);
+		wallArray.push_back(boulder);
+	}
+
+	//Only spawn player on sand tiles
+	bool flag = true;
+	int playerX;
+	int playerY;
+	while (flag) {
+		playerX = generateRandom0(89);
+		playerY = generateRandom0(89);
+		flag = false;
+		if (heightToTile(world._Matrix[playerY][playerX]) != 1) {
+			flag = true;
+		}
+	}
+
+	player.rect.setPosition(playerX * 64, playerY * 64);
+
+	int enemyX;
+	int enemyY;
+	//gen enemy
+	for (int i = 0; i < 8; i++) {
+		bool flagEnemy = true;
+
+		while (flagEnemy) {
+			enemyX = generateRandom0(89);
+			enemyY = generateRandom0(89);
+			flagEnemy = false;
+			if (heightToTile(world._Matrix[enemyY][enemyX]) != 1) {
+				flagEnemy = true;
+			}
+		}
+
+		enemy.rect.setPosition(enemyX * 64, enemyY * 64);
+		enemyArray.push_back(enemy);
+	}
+}
+
+void Game::remap() {
+	cout << *playingScore << endl;
 	view.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
 	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
 	window->setView(view);
@@ -251,6 +371,7 @@ void Game::reset() {
 	world.CreateMatrix();
 	world.Interpolation();
 	generateMap();
+	generateGameObjects();
 }
 
 void Game::run() {
@@ -270,11 +391,7 @@ void Game::render() {
 		window->draw(*it);
 	}
 
-	// Draw wall
-	/*
-	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
-		window->draw(wIt->rect);
-	}*/
+	window->draw(player.sprite);
 
 	//Draw npc
 	for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
@@ -297,10 +414,16 @@ void Game::render() {
 	//Update Enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 		eIt->update();
-		eIt->updateMovement();
+		eIt->updateMovement(false);
 		window->draw(eIt->text);
-		window->draw(eIt->rect);
+		//window->draw(eIt->rect);
 		window->draw(eIt->sprite);
+	}
+
+	// Draw wall
+	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
+		window->draw(wIt->sprite);
+		//window->draw(wIt->rect);
 	}
 
 	//drawing coin
@@ -317,7 +440,6 @@ void Game::render() {
 		isUsingStandShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2 + 48);
 		window->draw(isUsingStandShow);
 	}
-	window->draw(player.sprite);
 
 	if (!dialogBox.isShow) {
 		if (!isUsingStand) {
@@ -379,7 +501,7 @@ void Game::inputProcess() {
 	}
 	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
-		reset();
+		remap();
 	}
 	
 	sf::Event event;
@@ -547,7 +669,6 @@ void Game::collisionRelated() {
 
 void Game::enemyRelated() {
 	// Enemy attack player
-	
 	sf::Time enemyAttackPlayer = enemyAttackPlayerClock.getElapsedTime();
 	if (enemyAttackPlayer.asSeconds() >= 0.30f) {
 		enemyAttackPlayerClock.restart();
@@ -555,6 +676,7 @@ void Game::enemyRelated() {
 			if (player.rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds())) {
 				isUsingStand = false;
 				enemy.isAggressive = true;
+				enemy.updateMovement(true);
 				player.hp -= enemy.attackDamage;
 				stand.rect.setPosition(player.rect.getPosition());
 				soundPlayerHit.play();
@@ -566,7 +688,7 @@ void Game::enemyRelated() {
 				textDisplay.text.setString(to_string(enemy.attackDamage));
 				textDisplayArray.push_back(textDisplay);
 				if (player.hp <= 0) {
-					reset();
+					remap();
 					*isPlaying = false;
 					*state = 2;
 				}
