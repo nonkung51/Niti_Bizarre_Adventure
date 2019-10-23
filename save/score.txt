@@ -8,3 +8,5 @@ niti,100
      sdaasd,0
   ksks,200
 kc,100
+niti!!,200
+,0

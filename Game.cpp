@@ -150,11 +150,14 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 	generateMap();
 
 	generateGameObjects();
-	//Npc
-	npcSetup();
 
 	// Enemy Type
 	enemySetup();
+	//Npc
+	npcSetup();
+
+	// Stage dialog
+	stageDialog();
 }
 
 
@@ -341,23 +344,43 @@ void Game::generateGameObjects() {
 }
 
 void Game::dialogUpdate() {
-	for (auto &npc : npcArray) {
-		//When first met
-		if (dialogBox.finish && dialogBox.active == npc.name && dialogBox.conversation == npc.conversation) {
-			npc.stand.rect.setPosition(npc.rect.getPosition());
-			enemyArray.push_back(npc.stand);
-			dialogBox.conversation = {};
-			dialogBox.active = "";
-		}
-		//after kill their stand
-		if (dialogBox.finish && dialogBox.active == npc.name && dialogBox.conversation == npc.endConversation && dialogBox.conversation.size() > 0) {
-			dialogBox.conversation = {};
-			dialogBox.active = "";
-			currentStage++;
-			cout << "skmcmksc" << endl;
-			remap();
-		}
+	//When first met
+	if (dialogBox.finish && dialogBox.active == activeNpc.name && dialogBox.conversation == activeNpc.conversation) {
+		activeNpc.stand.rect.setPosition(activeNpc.rect.getPosition());
+		enemyArray.push_back(activeNpc.stand);
+		dialogBox.conversation = {};
+		dialogBox.active = "";
 	}
+	//after kill their stand
+	if (dialogBox.finish && dialogBox.active == activeNpc.name && dialogBox.conversation == activeNpc.endConversation && dialogBox.conversation.size() > 0) {
+		dialogBox.conversation = {};
+		dialogBox.active = "";
+		currentStage++;
+		cout << "skmcmksc" << endl;
+		remap();
+	}
+	// stage dialog
+	if (dialogBox.finish && dialogBox.active == "STAGE_CHANGE") {
+		dialogBox.conversation = {};
+		dialogBox.active = "";
+	}
+}
+
+void Game::stageDialog() {
+	vector<vector<string>> dialog = {
+		{
+			"You\'re so deseperate.\nYour father got killed in his own home.\nYour family treasure stolen.",
+			"But it\'s not time to give up yet!\nyou find your new ability called stand!!",
+			"Use it wisely, get your family honor\nback from the one who stole it!!"
+		},
+		{
+			"You manage to kill hibari, his baton was damn hurt",
+			"But you still have to continue your journey.",
+			"You\'ve heard the news there\'s stand user nearby. You don\'t know his abilities but It\'s not a bad idea to visit.",
+			"WIll he be friendly??"
+		},
+	};
+	dialogBox.setDialog(dialog[currentStage - 1], "STAGE_CHANGE");
 }
 
 void Game::remap() {
@@ -391,6 +414,9 @@ void Game::remap() {
 
 	//Npc
 	npcSetup();
+
+	// generate dialog for certain stage
+	stageDialog();
 }
 
 void Game::enemySetup() {
@@ -425,8 +451,9 @@ void Game::enemySetup() {
 }
 
 void Game::npcSetup() {
-	if (!npcTexture.at(0).loadFromFile("res/img/stand.png")) {
-		cout << "res/img/stand.png not loaded." << endl;
+	//////////////////////// hibari
+	if (!npcTexture.at(0).loadFromFile("res/img/npc.png")) {
+		cout << "res/img/npc.png not loaded." << endl;
 	}
 	npcArray.at(0).name = "Hibari";
 	npcArray.at(0).conversation = vector<string>{ "What are you doing?", "Go away!!", "!!" };
@@ -439,6 +466,26 @@ void Game::npcSetup() {
 	npcArray.at(0).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
 	npcArray.at(0).rect.setPosition({ player.rect.getPosition().x + 50, player.rect.getPosition().y +50 });
 	npcArray.at(0).update();
+	///////////////////////// karz
+	if (!npcTexture.at(1).loadFromFile("res/img/npc2.png")) {
+		cout << "res/img/npc2.png not loaded." << endl;
+	}
+	npcArray.at(1).name = "Karz";
+	npcArray.at(1).conversation = vector<string>{ "You kill hibari??", "Damn I don\'t trust you!!", "But fine let\'s fight." };
+	npcArray.at(1).endConversation = vector<string>{ "You killed my stand!!" };
+	npcArray.at(1).stand = enemy;
+	npcArray.at(1).stand.owner = npcArray.at(1).name;
+	npcArray.at(1).sprite.setTexture(npcTexture.at(1));
+	npcArray.at(1).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
+	npcArray.at(1).rect.setPosition({ player.rect.getPosition().x + 50, player.rect.getPosition().y + 50 });
+	npcArray.at(1).update();
+
+	if (currentStage > 2) { //game ending
+		*isPlaying = false;
+		*state = 2;
+		return;
+	}
+	activeNpc = npcArray.at(currentStage - 1);
 }
 
 void Game::run() {
@@ -461,9 +508,9 @@ void Game::render() {
 	window->draw(player.sprite);
 
 	//Draw npc
-	for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
-		window->draw(nIt->sprite);
-	}
+	//for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
+		window->draw(activeNpc.sprite);
+	//}
 
 	// Draw Pickup item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
@@ -483,7 +530,7 @@ void Game::render() {
 		eIt->update();
 		eIt->updateMovement(false);
 		window->draw(eIt->text);
-		//window->draw(eIt->rect);
+		window->draw(eIt->rect);
 		window->draw(eIt->sprite);
 	}
 
@@ -524,25 +571,31 @@ void Game::render() {
 		}
 	}
 
-// Draw damage effect
-for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
-	tIt->update();
-	window->draw(tIt->text);
-}
-
-dialogBox.box.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y + window->getSize().y / 6);
-dialogBox.text.setPosition(20 + player.rect.getPosition().x - window->getSize().x / 2, 20 + player.rect.getPosition().y + window->getSize().y / 6);
-//dialogBox.text.setString("Hi");
-//Draw dialog box
-if (dialogBox.isShow) {
-	window->draw(dialogBox.box);
-	window->draw(dialogBox.text);
-	if (isUsingStand) {
-		window->draw(stand.sprite);
+	// Draw damage effect
+	for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
+		tIt->update();
+		window->draw(tIt->text);
 	}
-}
 
-window->display();
+	dialogBox.box.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y + window->getSize().y / 6);
+	dialogBox.text.setPosition(20 + player.rect.getPosition().x - window->getSize().x / 2, 20 + player.rect.getPosition().y + window->getSize().y / 6);
+	//dialogBox.text.setString("Hi");
+	//Draw dialog box
+	if (dialogBox.active == "STAGE_CHANGE" && dialogBox.isShow) {
+		sf::RectangleShape black;
+		black.setFillColor(sf::Color::Black);
+		black.setSize(sf::Vector2f{ 89.f * 64.f, 89.f * 64.f });
+		window->draw(black);
+	}
+	if (dialogBox.isShow) {
+		window->draw(dialogBox.box);
+		window->draw(dialogBox.text);
+		if (isUsingStand) {
+			window->draw(stand.sprite);
+		}
+	}
+
+	window->display();
 }
 
 void Game::inputProcess() {
@@ -596,7 +649,7 @@ void Game::inputProcess() {
 void Game::clearJunk() {
 	//player kill npc stand
 	for (auto& enemy : enemyArray) {
-		for (vector <Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
+		for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
 			if (enemy.hp <= 0 && enemy.owner == nIt->name) {
 				//cout << nIt->endConversation[0] << endl;
 				dialogBox.setDialog(nIt->endConversation, nIt->name);
@@ -706,16 +759,16 @@ void Game::collisionRelated() {
 	}
 
 	//Player collide with Npc
-	for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
-		if (player.rect.getGlobalBounds().intersects(nIt->rect.getGlobalBounds())) {
+	//for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
+		if (player.rect.getGlobalBounds().intersects(activeNpc.rect.getGlobalBounds())) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
 				//dialogBox.reset();
 				//dialogBox.conversation = nIt->conversation;
 				//dialogBox.isShow = true;
-				dialogBox.setDialog(nIt->conversation, nIt->name);
+				dialogBox.setDialog(activeNpc.conversation, activeNpc.name);
 			}
 		}
-	}
+	//}
 
 	//Projectile collide with wall
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {

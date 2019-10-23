@@ -34,6 +34,7 @@ public:
 	void generateGameObjects();
 	void remap();
 	void dialogUpdate();
+	void stageDialog();
 
 	bool isUsingStand = false;
 	sf::RenderWindow *window;
@@ -102,8 +103,9 @@ private:
 	DialogBox dialogBox;
 
 	// Npc
-	vector<Npc> npcArray = { Npc() };//, Npc() };
-	vector<sf::Texture> npcTexture = { sf::Texture() };//, sf::Texture() };
+	Npc activeNpc;
+	vector<Npc> npcArray = { Npc(), Npc() };
+	vector<sf::Texture> npcTexture = { sf::Texture(), sf::Texture() };
 
 	//connect with menu
 	bool* isPlaying;
