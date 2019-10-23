@@ -66,7 +66,7 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 		cout << "res/music/Windless Slopes.ogg not loaded." << endl;
 	}
 	music.setLoop(true);
-	music.play();
+	//music.play();
 
 	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
 		cout << "res/img/environment.png not loaded." << endl;
@@ -120,6 +120,8 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 
 	textDisplay.text.setFont(font);
 
+	currentStageShow.setFont(font);
+	currentStageShow.setCharacterSize(25);
 	coinShow.setFont(font);
 	coinShow.setCharacterSize(25);
 	hpShow.setFont(font);
@@ -338,7 +340,31 @@ void Game::generateGameObjects() {
 	}
 }
 
+void Game::dialogUpdate() {
+	for (auto &npc : npcArray) {
+		//When first met
+		if (dialogBox.finish && dialogBox.active == npc.name && dialogBox.conversation == npc.conversation) {
+			npc.stand.rect.setPosition(npc.rect.getPosition());
+			enemyArray.push_back(npc.stand);
+			dialogBox.conversation = {};
+			dialogBox.active = "";
+		}
+		//after kill their stand
+		if (dialogBox.finish && dialogBox.active == npc.name && dialogBox.conversation == npc.endConversation && dialogBox.conversation.size() > 0) {
+			dialogBox.conversation = {};
+			dialogBox.active = "";
+			currentStage++;
+			cout << "skmcmksc" << endl;
+			remap();
+		}
+	}
+}
+
 void Game::remap() {
+	isUsingStand = false;
+	player.update();
+	player.updateMovement(false);
+	dialogBox.isShow = false;
 	view.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
 	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
 	window->setView(view);
@@ -399,22 +425,20 @@ void Game::enemySetup() {
 }
 
 void Game::npcSetup() {
-	//npcTexture.push_back(sf::Texture());
-	if (!npcTexture.at(npcTexture.size() - 1).loadFromFile("res/img/stand.png")) {
+	if (!npcTexture.at(0).loadFromFile("res/img/stand.png")) {
 		cout << "res/img/stand.png not loaded." << endl;
 	}
-	//npcArray.push_back(Npc());
-	npcArray.at(npcArray.size() - 1).name = "Hibari";
-	npcArray.at(npcArray.size() - 1).conversation = vector<string>{ "What are you doing?", "Go away!!", "!!" };
-	npcArray.at(npcArray.size() - 1).endConversation = vector<string>{ "Go away!!", "You kill my stand", "!!" };
-	npcArray.at(npcArray.size() - 1).stand = enemy;
-	npcArray.at(npcArray.size() - 1).stand.owner = npcArray.at(npcArray.size() - 1).name;
-	npcArray.at(npcArray.size() - 1).sprite.setTexture(npcTexture.at(npcArray.size() - 1));
-	int spriteSizeX = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().x / 13;
-	int spriteSizeY = npcArray.at(npcArray.size() - 1).sprite.getTexture()->getSize().y / 21;
-	npcArray.at(npcArray.size() - 1).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
-	npcArray.at(npcArray.size() - 1).rect.setPosition({ player.rect.getPosition().x + 50, player.rect.getPosition().y +50 });
-	npcArray.at(npcArray.size() - 1).update();
+	npcArray.at(0).name = "Hibari";
+	npcArray.at(0).conversation = vector<string>{ "What are you doing?", "Go away!!", "!!" };
+	npcArray.at(0).endConversation = vector<string>{ "You killed my stand!!" };
+	npcArray.at(0).stand = enemy;
+	npcArray.at(0).stand.owner = npcArray.at(0).name;
+	npcArray.at(0).sprite.setTexture(npcTexture.at(0));
+	int spriteSizeX = npcArray.at(0).sprite.getTexture()->getSize().x / 13;
+	int spriteSizeY = npcArray.at(0).sprite.getTexture()->getSize().y / 21;
+	npcArray.at(0).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
+	npcArray.at(0).rect.setPosition({ player.rect.getPosition().x + 50, player.rect.getPosition().y +50 });
+	npcArray.at(0).update();
 }
 
 void Game::run() {
@@ -469,6 +493,10 @@ void Game::render() {
 		//window->draw(wIt->rect);
 	}
 
+	//drawing current stage
+	currentStageShow.setString("Current stage: " + to_string(currentStage));
+	currentStageShow.setPosition(player.rect.getPosition().x + window->getSize().x / 2 - 300, player.rect.getPosition().y - window->getSize().y / 2);
+	window->draw(currentStageShow);
 	//drawing coin
 	coinShow.setString("Coin : " + to_string(player.coin));
 	coinShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2);
@@ -566,9 +594,18 @@ void Game::inputProcess() {
 }
 
 void Game::clearJunk() {
+	//player kill npc stand
+	for (auto& enemy : enemyArray) {
+		for (vector <Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
+			if (enemy.hp <= 0 && enemy.owner == nIt->name) {
+				//cout << nIt->endConversation[0] << endl;
+				dialogBox.setDialog(nIt->endConversation, nIt->name);
+			}
+		}
+	}
 	//Delete dead enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-		if (eIt->alive == false && eIt->owner == "") {
+		if (eIt->alive == false) {
 			//random generate coin
 			if (generateRandom(3) == 1) {
 				pickup.inShop = false;
@@ -594,15 +631,7 @@ void Game::clearJunk() {
 		}
 	}
 
-	//player kill npc stand
-	for (auto& enemy : enemyArray) {
-		for (vector <Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
-			if (enemy.hp <= 0 && enemy.owner == nIt->name) {
-				cout << "you masaka" << endl;
-				remap();
-			}
-		}
-	}
+
 
 	//Delete Bullet
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
@@ -658,6 +687,7 @@ void Game::clearJunk() {
 }
 
 void Game::update() {
+	dialogUpdate();
 	collisionRelated();
 	itemRelated();
 	enemyRelated();
@@ -679,14 +709,10 @@ void Game::collisionRelated() {
 	for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
 		if (player.rect.getGlobalBounds().intersects(nIt->rect.getGlobalBounds())) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
-				dialogBox.reset();
-				dialogBox.conversation = nIt->conversation;
-				dialogBox.isShow = true;
-			}
-			if (dialogBox.conversation.at(dialogBox.curIndex) == "!!") {
-				nIt->stand.rect.setPosition(nIt->rect.getPosition());
-				enemyArray.push_back(nIt->stand);
-				dialogBox.reset();
+				//dialogBox.reset();
+				//dialogBox.conversation = nIt->conversation;
+				//dialogBox.isShow = true;
+				dialogBox.setDialog(nIt->conversation, nIt->name);
 			}
 		}
 	}
@@ -725,7 +751,7 @@ void Game::enemyRelated() {
 	if (enemyAttackPlayer.asSeconds() >= 0.30f) {
 		enemyAttackPlayerClock.restart();
 		for (auto &enemy : enemyArray) {
-			if (player.rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds())) {
+			if (player.rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds()) && enemy.hp > 0) {
 				isUsingStand = false;
 				enemy.isAggressive = true;
 				enemy.updateMovement(true);

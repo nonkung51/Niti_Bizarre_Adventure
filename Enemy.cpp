@@ -23,7 +23,6 @@ void Enemy::updateMovement(bool isAttack) {
 		int spriteSizeX = 64;//sprite.getTexture()->getSize().x / 13;
 		int spriteSizeY = 64;//sprite.getTexture()->getSize().y / 21;
 		if (isPlayingAttack) {
-			std::cout << "attack" << std::endl;
 			int animDi[4] = { 4,6,5,7 };
 			sprite.setTextureRect(sf::IntRect(spriteSizeX * counterAttack, spriteSizeY * animDi[direction - 1], spriteSizeX, spriteSizeY));
 			counterAttack++;

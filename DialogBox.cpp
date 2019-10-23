@@ -10,6 +10,7 @@ void DialogBox::update() {
 	curIndex++;
 	if (curIndex == conversation.size()) {
 		reset();
+		finish = true;
 		isShow = false;
 		return;
 	}
@@ -18,5 +19,13 @@ void DialogBox::update() {
 
 void DialogBox::reset() {
 	curIndex = 0;
+	text.setString(conversation.at(curIndex));
+}
+
+void DialogBox::setDialog(std::vector<std::string> conv, std::string act) {
+	conversation = conv;
+	active = act;
+	isShow = true;
+	finish = false;
 	text.setString(conversation.at(curIndex));
 }

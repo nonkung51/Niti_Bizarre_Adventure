@@ -33,6 +33,7 @@ public:
 	void generateMap();
 	void generateGameObjects();
 	void remap();
+	void dialogUpdate();
 
 	bool isUsingStand = false;
 	sf::RenderWindow *window;
@@ -92,6 +93,7 @@ private:
 
 
 	// UI related
+	sf::Text currentStageShow;
 	sf::Text coinShow;
 	sf::Text hpShow;
 	sf::Text isUsingStandShow;
@@ -100,8 +102,8 @@ private:
 	DialogBox dialogBox;
 
 	// Npc
-	vector<Npc> npcArray = {Npc()};
-	vector<sf::Texture> npcTexture = {sf::Texture()};
+	vector<Npc> npcArray = { Npc() };//, Npc() };
+	vector<sf::Texture> npcTexture = { sf::Texture() };//, sf::Texture() };
 
 	//connect with menu
 	bool* isPlaying;
