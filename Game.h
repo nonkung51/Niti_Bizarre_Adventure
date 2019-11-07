@@ -43,7 +43,9 @@ public:
 	int currentStage = 1;
 
 private:
-	sf::Clock attackClock, enemyAttackPlayerClock, aggressiveEnemyClock, switchStandClock, dialogClock;
+	sf::Clock attackClock, enemyAttackPlayerClock, 
+		aggressiveEnemyClock, switchStandClock,
+		dialogClock, loadingClock;
 	sf::View view;
 
 	//Resources
@@ -95,7 +97,7 @@ private:
 
 	// UI related
 	sf::Text currentStageShow;
-	sf::Text coinShow;
+	sf::Text extraShow;
 	sf::Text hpShow;
 	sf::Text isUsingStandShow;
 	sf::Vector2f focusPoint;
@@ -112,4 +114,5 @@ private:
 
 	void enemySetup();
 	void npcSetup();
+	void renderLoading();
 };

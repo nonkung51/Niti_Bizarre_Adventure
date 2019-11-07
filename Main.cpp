@@ -27,6 +27,15 @@ int main() {
 	logoSprite.setScale({ 0.15, 0.15 });
 	logoSprite.setPosition(window.getSize().x / 2 - logoTexture.getSize().x / 2 * 0.15, window.getSize().y / 4 - logoTexture.getSize().y / 2 * 0.15);
 
+	sf::Texture starTexture;
+	if (!starTexture.loadFromFile("res/img/stars.png")) {
+		std::cout << "picture not loaded." << std::endl;
+	}
+	sf::Sprite starSprite;
+	starSprite.setTexture(starTexture);
+	starSprite.setScale({0.8, 0.95});
+	//starSprite.setPosition(window.getSize().x / 2 - logoTexture.getSize().x / 2 * 0.15, window.getSize().y / 4 - logoTexture.getSize().y / 2 * 0.15);
+
 
 	std::vector<std::string> buttonText{ "Start", "Score", "Close" };
 
@@ -51,6 +60,7 @@ int main() {
 			window.setView(sf::View({ 1080/2,720/2 }, { 1080, 720 }));
 			window.clear(sf::Color(168, 109, 171));
 			if (state == 0) {
+				window.draw(starSprite);
 				window.draw(logoSprite);
 				for (int button = 0; button < 3; button++) {
 					sf::Text text(buttonText.at(button), font);
@@ -65,6 +75,7 @@ int main() {
 				}
 			}
 			if (state == 1) {
+				window.draw(starSprite);
 				window.draw(logoSprite);
 				sf::Text text("Enter to go back", font);
 				text.setCharacterSize(30);
@@ -90,6 +101,9 @@ int main() {
 					text.setPosition(700, 400 + 40 * currentDisplay);
 					window.draw(text);
 					currentDisplay++;
+					if (currentDisplay == 5) {
+						break;
+					}
 				}
 				currentDisplay = 0;
 				text.setString("Enter to go back");
@@ -158,7 +172,11 @@ int main() {
 						state = 0;
 						playingScore = 0;
 					}
-					playerInput += event.text.unicode;
+					if (event.text.unicode == 8) {
+						playerInput = playerInput.substring(0, playerInput.getSize() - 1);
+					} else {
+						playerInput += event.text.unicode;
+					}
 				}
 			}
 		}

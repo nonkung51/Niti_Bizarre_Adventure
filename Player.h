@@ -6,7 +6,7 @@ class Player : public Entity {
 		int hp = 20;
 		int maxHp = 20;
 		int direction = 0; // 1 - up, 2 - down, 3 - left, 4 - right
-		int coin = 0;
+		int extra = 0;
 		int cantMoveDi = 0;
 		float movementSpeed = 2.0f;
 

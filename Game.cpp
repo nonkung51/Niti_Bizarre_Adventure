@@ -4,17 +4,17 @@
 
 int heightToTile(int h) {
 	//mountain
-	if (h < 35) {
+	if (h <= 15) {
 		return 0;
 	}
 
 	// grass
-	if (h > 34 && h < 50) {
+	if (h > 15 && h < 80) {
 		return 1;
 	}
 
 	// sand
-	if (h > 49) {
+	if (h >= 80) {
 		return 2;
 	}
 }
@@ -122,8 +122,8 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 
 	currentStageShow.setFont(font);
 	currentStageShow.setCharacterSize(25);
-	coinShow.setFont(font);
-	coinShow.setCharacterSize(25);
+	extraShow.setFont(font);
+	extraShow.setCharacterSize(25);
 	hpShow.setFont(font);
 	hpShow.setCharacterSize(25);
 	isUsingStandShow.setFont(font);
@@ -149,12 +149,13 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 	//world.CreateGraphics();
 	generateMap();
 
-	generateGameObjects();
+	
 
 	// Enemy Type
 	enemySetup();
 	//Npc
 	npcSetup();
+	generateGameObjects();
 
 	// Stage dialog
 	stageDialog();
@@ -163,8 +164,8 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 
 void Game::generateMap() {
 	mapDrawer.setTexture(tiles);
-	for (int y = 0; y < 89; y++) {
-		for (int x = 0; x < 89; x++) {
+	for (int y = 0; y < 49; y++) {
+		for (int x = 0; x < 49; x++) {
 			// mountain (set wall so people can't pass through)
 			if (heightToTile(world._Matrix[y][x]) == 0) {
 				mapDrawer.setTextureRect(sf::IntRect(5 * 16, 16 * 2, 16, 16));
@@ -259,62 +260,41 @@ void Game::generateMap() {
 }
 
 void Game::generateGameObjects() {
-	int treeX, treeY;
 	Wall tree;
 	tree.sprite.setTexture(tiles);
 	tree.sprite.setTextureRect(sf::IntRect(6 * 16, 5 * 16, 32, 32));
 	tree.sprite.setScale(sf::Vector2f(4.f, 4.f));
-
-	//gen tree
-	for (int i = 0; i < 55; i++) {
-		bool flagTree = true;
-
-		while (flagTree) {
-			treeX = generateRandom0(89);
-			treeY = generateRandom0(89);
-			flagTree = false;
-			if (heightToTile(world._Matrix[treeY][treeX]) != 1) {
-				flagTree = true;
-			}
-		}
-
-		tree.rect.setPosition(treeX * 64 + 32, treeY * 64 + 64);
-		tree.sprite.setPosition(treeX * 64, treeY * 64);
-		wallArray.push_back(tree);
-	}
-
-	// gen boulders
-
-	int boulderX, boulderY;
 	Wall boulder;
 	boulder.sprite.setTexture(tiles);
 	boulder.sprite.setTextureRect(sf::IntRect(9 * 16, 5 * 16, 16, 16));
 	boulder.sprite.setScale(sf::Vector2f(4.f, 4.f));
 
-	for (int i = 0; i < 20; i++) {
-		bool flagBoulder = true;
-
-		while (flagBoulder) {
-			boulderX = generateRandom0(89);
-			boulderY = generateRandom0(89);
-			flagBoulder = false;
-			if (heightToTile(world._Matrix[boulderY][boulderX]) != 1) {
-				flagBoulder = true;
+	for (int x = 0, curObs = 0; x < 49 && curObs < 100; x++) {
+		for (int y = 0; y < 49; y++) {
+			bool gen = generateRandom(10) > 9;
+			if (gen && heightToTile(world._Matrix[y][x]) == 1) {
+				curObs++;
+				bool gTree = generateRandom(10) > 3;
+				if (gTree) {
+					tree.rect.setPosition(x * 64 + 32, y * 64 + 64);
+					tree.sprite.setPosition(x * 64, y * 64);
+					wallArray.push_back(tree);
+				}
+				else {
+					boulder.rect.setPosition(x * 64, y * 64);
+					boulder.sprite.setPosition(x * 64, y * 64);
+					wallArray.push_back(boulder);
+				}
 			}
 		}
-
-		boulder.rect.setPosition(boulderX * 64, boulderY * 64);
-		boulder.sprite.setPosition(boulderX * 64, boulderY * 64);
-		wallArray.push_back(boulder);
 	}
-
 	//Only spawn player on sand tiles
 	bool flag = true;
 	int playerX;
 	int playerY;
 	while (flag) {
-		playerX = generateRandom0(89);
-		playerY = generateRandom0(89);
+		playerX = generateRandom0(49);
+		playerY = generateRandom0(49);
 		flag = false;
 		if (heightToTile(world._Matrix[playerY][playerX]) != 1) {
 			flag = true;
@@ -326,27 +306,61 @@ void Game::generateGameObjects() {
 	int enemyX;
 	int enemyY;
 	//gen enemy
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 30; i++) {
 		bool flagEnemy = true;
-
 		while (flagEnemy) {
-			enemyX = generateRandom0(89);
-			enemyY = generateRandom0(89);
+			enemyX = generateRandom0(49);
+			enemyY = generateRandom0(49);
 			flagEnemy = false;
 			if (heightToTile(world._Matrix[enemyY][enemyX]) != 1) {
 				flagEnemy = true;
 			}
 		}
-		int type = generateRandom0(3);
+		int type = generateRandom0(currentStage); //generate monster according to current stage
 		enemyType[type].rect.setPosition(enemyX * 64, enemyY * 64);
 		enemyArray.push_back(enemyType[type]);
 	}
+
+	int stepLength = 1;
+	int bossX = playerX;
+	int bossY = playerY;
+	while (distance(playerX, playerY, bossX, bossY) > 50.f) {
+		int di = generateRandom(4);
+		if (di == 1 && bossY > 0) {
+			bossY -= stepLength;
+		}
+		else if (di == 2 && bossY < 49) {
+			bossY += stepLength;
+		}
+		else if (di == 3 && bossX > 0) {
+			bossX -= stepLength;
+		}
+		else if (di == 4 && bossX < 49) {
+			bossX += stepLength;
+		}
+		cout << bossX << " " << bossY << endl;
+		activeNpc.rect.setPosition(bossX * 64, bossY * 64);
+		for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
+			int bounce[4][2] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+			if (activeNpc.rect.getGlobalBounds().intersects(wIt->rect.getGlobalBounds())) {
+				cout << "Bounce!" << endl;
+				activeNpc.rect.setPosition(bossX * 64 + bounce[di - 1][0] * stepLength * 64
+					, bossY * 64 + bounce[di - 1][1] * stepLength * 64);
+			}
+		}
+		activeNpc.update();
+	}
+}
+
+void Game::renderLoading() {
+	window->clear();
 }
 
 void Game::dialogUpdate() {
 	//When first met
 	if (dialogBox.finish && dialogBox.active == activeNpc.name && dialogBox.conversation == activeNpc.conversation) {
 		activeNpc.stand.rect.setPosition(activeNpc.rect.getPosition());
+		activeNpc.stand.isAggressive = true;
 		enemyArray.push_back(activeNpc.stand);
 		dialogBox.conversation = {};
 		dialogBox.active = "";
@@ -356,7 +370,6 @@ void Game::dialogUpdate() {
 		dialogBox.conversation = {};
 		dialogBox.active = "";
 		currentStage++;
-		cout << "skmcmksc" << endl;
 		remap();
 	}
 	// stage dialog
@@ -380,6 +393,9 @@ void Game::stageDialog() {
 			"WIll he be friendly??"
 		},
 	};
+	if (currentStage > 2) {
+		return;
+	}
 	dialogBox.setDialog(dialog[currentStage - 1], "STAGE_CHANGE");
 }
 
@@ -410,11 +426,10 @@ void Game::remap() {
 	world.CreateMatrix();
 	world.Interpolation();
 	generateMap();
-	generateGameObjects();
-
 	//Npc
 	npcSetup();
 
+	generateGameObjects();
 	// generate dialog for certain stage
 	stageDialog();
 }
@@ -464,7 +479,7 @@ void Game::npcSetup() {
 	int spriteSizeX = npcArray.at(0).sprite.getTexture()->getSize().x / 13;
 	int spriteSizeY = npcArray.at(0).sprite.getTexture()->getSize().y / 21;
 	npcArray.at(0).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
-	npcArray.at(0).rect.setPosition({ player.rect.getPosition().x + 50, player.rect.getPosition().y +50 });
+	npcArray.at(0).rect.setPosition({ player.rect.getPosition().x - 64 * 8, player.rect.getPosition().y - 64 * 7 });
 	npcArray.at(0).update();
 	///////////////////////// karz
 	if (!npcTexture.at(1).loadFromFile("res/img/npc2.png")) {
@@ -472,12 +487,12 @@ void Game::npcSetup() {
 	}
 	npcArray.at(1).name = "Karz";
 	npcArray.at(1).conversation = vector<string>{ "You kill hibari??", "Damn I don\'t trust you!!", "But fine let\'s fight." };
-	npcArray.at(1).endConversation = vector<string>{ "You killed my stand!!" };
+	npcArray.at(1).endConversation = vector<string>{ "You killed my stand!! Damn you!" };
 	npcArray.at(1).stand = enemy;
 	npcArray.at(1).stand.owner = npcArray.at(1).name;
 	npcArray.at(1).sprite.setTexture(npcTexture.at(1));
 	npcArray.at(1).sprite.setTextureRect(sf::IntRect(0, 2 * spriteSizeY, spriteSizeX, spriteSizeY));
-	npcArray.at(1).rect.setPosition({ player.rect.getPosition().x + 50, player.rect.getPosition().y + 50 });
+	npcArray.at(1).rect.setPosition({ player.rect.getPosition().x - 64 * 8, player.rect.getPosition().y - 64 * 7 });
 	npcArray.at(1).update();
 
 	if (currentStage > 2) { //game ending
@@ -489,28 +504,28 @@ void Game::npcSetup() {
 }
 
 void Game::run() {
-	window->clear();
-	view.setCenter(player.rect.getPosition());
-	window->setView(view);
-	update();
-	clearJunk();
-	inputProcess();
-	render();
+	if (loadingClock.getElapsedTime().asSeconds() > 5.f) {
+		window->clear(sf::Color(130, 170, 40, 255));
+		view.setCenter(player.rect.getPosition());
+		window->setView(view);
+		update();
+		clearJunk();
+		inputProcess();
+		render();
+	} else {
+		renderLoading();
+		remap();
+	}
 }
 
 void Game::render() {
 	//World
-	//world.Render(&window);
 	for (vector<sf::Sprite>::iterator it = mapSprite.begin(); it != mapSprite.end(); it++) {
 		window->draw(*it);
 	}
 
 	window->draw(player.sprite);
-
-	//Draw npc
-	//for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
-		window->draw(activeNpc.sprite);
-	//}
+	window->draw(activeNpc.sprite);
 
 	// Draw Pickup item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
@@ -530,7 +545,7 @@ void Game::render() {
 		eIt->update();
 		eIt->updateMovement(false);
 		window->draw(eIt->text);
-		window->draw(eIt->rect);
+		//window->draw(eIt->rect);
 		window->draw(eIt->sprite);
 	}
 
@@ -544,10 +559,10 @@ void Game::render() {
 	currentStageShow.setString("Current stage: " + to_string(currentStage));
 	currentStageShow.setPosition(player.rect.getPosition().x + window->getSize().x / 2 - 300, player.rect.getPosition().y - window->getSize().y / 2);
 	window->draw(currentStageShow);
-	//drawing coin
-	coinShow.setString("Coin : " + to_string(player.coin));
-	coinShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2);
-	window->draw(coinShow);
+	//drawing extra
+	extraShow.setString("extra : " + to_string(player.extra));
+	extraShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2);
+	window->draw(extraShow);
 	//drawing player hp
 	hpShow.setString("HP : " + to_string(player.hp) + "/" + to_string(player.maxHp));
 	hpShow.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y - window->getSize().y / 2 + 24);
@@ -579,7 +594,7 @@ void Game::render() {
 
 	dialogBox.box.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y + window->getSize().y / 6);
 	dialogBox.text.setPosition(20 + player.rect.getPosition().x - window->getSize().x / 2, 20 + player.rect.getPosition().y + window->getSize().y / 6);
-	//dialogBox.text.setString("Hi");
+
 	//Draw dialog box
 	if (dialogBox.active == "STAGE_CHANGE" && dialogBox.isShow) {
 		sf::RectangleShape black;
@@ -636,9 +651,9 @@ void Game::inputProcess() {
 			break;
 
 		case sf::Event::KeyPressed:
-			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
+			/*if (!sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
 				dialogBox.isShow = false;
-			}
+			}*/
 			break;
 		default:
 			break;
@@ -659,7 +674,7 @@ void Game::clearJunk() {
 	//Delete dead enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 		if (eIt->alive == false) {
-			//random generate coin
+			//random generate extra
 			if (generateRandom(3) == 1) {
 				pickup.inShop = false;
 				pickup.isCoin = true;
@@ -713,7 +728,7 @@ void Game::clearJunk() {
 	//Delete Destructable wall
 	for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
 		if (wIt->destroyed) {
-			//random generate coin
+			//random generate extra
 			if (generateRandom(3) == 1) {
 				pickup.inShop = false;
 				pickup.isCoin = true;
@@ -740,6 +755,7 @@ void Game::clearJunk() {
 }
 
 void Game::update() {
+	*playingScore += player.extra * 10;
 	dialogUpdate();
 	collisionRelated();
 	itemRelated();
@@ -759,16 +775,11 @@ void Game::collisionRelated() {
 	}
 
 	//Player collide with Npc
-	//for (vector<Npc>::iterator nIt = npcArray.begin(); nIt != npcArray.end(); nIt++) {
-		if (player.rect.getGlobalBounds().intersects(activeNpc.rect.getGlobalBounds())) {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
-				//dialogBox.reset();
-				//dialogBox.conversation = nIt->conversation;
-				//dialogBox.isShow = true;
-				dialogBox.setDialog(activeNpc.conversation, activeNpc.name);
-			}
-		}
-	//}
+	if(distance(player.rect.getPosition().x, player.rect.getPosition().y,
+		activeNpc.rect.getPosition().x, activeNpc.rect.getPosition().y) <= 64 * 2 && !activeNpc.usingStand){
+		dialogBox.setDialog(activeNpc.conversation, activeNpc.name);
+		activeNpc.usingStand = true;
+	}
 
 	//Projectile collide with wall
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
@@ -832,10 +843,6 @@ void Game::enemyRelated() {
 		for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
 			if (pIt->rect.getGlobalBounds().intersects(
 				eIt->rect.getGlobalBounds())) {
-				if (eIt->isAggressive != true) {
-					dialogBox.text.setString("Ahhhhh!, You hit me!");
-					dialogBox.isShow = true;
-				}
 				eIt->isAggressive = true; //Set to chase player
 				// Enemy got hit
 				soundCollisionHit.play();
@@ -916,7 +923,7 @@ void Game::itemRelated() {
 		if (player.rect.getGlobalBounds().intersects(piIt->rect.getGlobalBounds())) {
 			if (!(piIt->inShop)) {
 				if (piIt->isCoin) {
-					player.coin += piIt->coinValue;
+					player.extra += piIt->coinValue;
 					piIt->destroyed = true;
 				}
 				else if (piIt->isPowerUp) {
@@ -930,9 +937,9 @@ void Game::itemRelated() {
 			else {
 				// draw cost
 				window->draw(piIt->text);
-				if (piIt->isPowerUp && player.coin >= piIt->cost
+				if (piIt->isPowerUp && player.extra >= piIt->cost
 					&& sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
-					player.coin -= piIt->cost;
+					player.extra -= piIt->cost;
 					player.hp += 5;
 					piIt->destroyed = true;
 				}

@@ -6,7 +6,7 @@ class Enemy : public Entity {
 	public:
 		int direction = 0; // 1 - up, 2 - down, 3 - left, 4 - right
 		int attackDamage = 1;
-		int hp = 1; 
+		int hp = 5; 
 		int maxHp = 5;
 		int cantMoveDi = 0;
 		float movementSpeed = 3.0f;

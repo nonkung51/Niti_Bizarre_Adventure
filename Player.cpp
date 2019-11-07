@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <iostream>
 
 Player::Player() {
 	rect.setSize(sf::Vector2f(32, 32));
@@ -63,5 +64,10 @@ void Player::updateMovement(bool isPlayAttack) {
 			counterWalking = 0;
 		}
 		cantMoveDi = 0;
+
+		//GPS God mode
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
+			std::cout << "player: " << rect.getPosition().x / 64 << " " << rect.getPosition().y / 64 << std::endl;
+		}
 	}
 }

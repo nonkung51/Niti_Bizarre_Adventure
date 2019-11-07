@@ -8,11 +8,8 @@ class WorldGenerator {
 	public:
 		void CreateMatrix();
 		void Interpolation();
-		void CreateGraphics();
 
-		void Render(sf::RenderWindow* window);
-
-		int _Matrix[89][89];
+		int _Matrix[49][49];
 
 	private:
 		std::vector<sf::RectangleShape*> _Graphics;

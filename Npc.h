@@ -11,6 +11,7 @@ public:
 	void update();
 	std::vector<std::string> conversation;
 	std::vector<std::string> endConversation;
+	bool usingStand = false;
 	Enemy stand;
 };
 
