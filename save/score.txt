@@ -1,19 +1,2 @@
-
-niti,2500
-wksksk,500
-c,500
-j,0
-d,500
-niti,100
-     sdaasd,0
-  ksks,200
-kc,100
-niti!!,200
-,0
-phol,200
-niti,1500
-lol,2000
-ksksksk,1000
-mo123l,500
-niti,27670
-,0
+Pom,0
+makids,32500

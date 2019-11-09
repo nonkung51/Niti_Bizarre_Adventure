@@ -55,10 +55,24 @@ int main() {
 
 	std::string word;
 
+	int starSpriteAnimation = 0;
+
 	while (window.isOpen()) {
 		if (!isPlaying) {
 			window.setView(sf::View({ 1080/2,720/2 }, { 1080, 720 }));
 			window.clear(sf::Color(168, 109, 171));
+			if (starSpriteAnimation <= 10) {
+				starSprite.move({ 1, -1 });
+				logoSprite.move({ -0.5, 0.5 });
+			}
+			else {
+				starSprite.move({ -1, 1 });
+				logoSprite.move({ 0.5, -0.5 });
+				if (starSpriteAnimation == 20) {
+					starSpriteAnimation = 0;
+				}
+			}
+			starSpriteAnimation++;
 			if (state == 0) {
 				window.draw(starSprite);
 				window.draw(logoSprite);
@@ -111,6 +125,7 @@ int main() {
 				window.draw(text);
 			}
 			if (state == 2) {
+				window.draw(starSprite);
 				window.draw(logoSprite);
 				sf::Text text("", font);
 				text.setString("Enter your name: ");
@@ -164,7 +179,7 @@ int main() {
 					return 0;
 				}
 				if (event.type == sf::Event::TextEntered && state == 2) {
-					if (event.text.unicode == 13) {
+					if (event.text.unicode == 13) { //enter
 						fileWriter.open("save/score.txt", std::ios::out | std::ios::app);
 						fileWriter << playerInput.toAnsiString() << "," << playingScore << '\n';
 						fileWriter.close();
@@ -172,7 +187,7 @@ int main() {
 						state = 0;
 						playingScore = 0;
 					}
-					if (event.text.unicode == 8) {
+					if (event.text.unicode == 8) { //backspace
 						playerInput = playerInput.substring(0, playerInput.getSize() - 1);
 					} else {
 						playerInput += event.text.unicode;

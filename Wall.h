@@ -6,6 +6,8 @@ class Wall : public Entity {
 		bool destructable = false;
 		bool destroyed = false;
 		int hp = 5;
+		bool trap = false;
+		bool damage = 2;
 
 			 Wall();
 		//void update();

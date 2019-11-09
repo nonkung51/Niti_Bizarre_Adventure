@@ -40,12 +40,12 @@ public:
 	sf::RenderWindow *window;
 	int* state;
 	int* playingScore = 0;
-	int currentStage = 1;
+	int currentStage = 4;
 
 private:
 	sf::Clock attackClock, enemyAttackPlayerClock, 
 		aggressiveEnemyClock, switchStandClock,
-		dialogClock, loadingClock;
+		dialogClock, loadingClock, shopClock, trapClock;
 	sf::View view;
 
 	//Resources
@@ -68,6 +68,8 @@ private:
 	sf::Texture textureEnemy;
 	sf::Texture textureCoin;
 	sf::Texture textureFireball;
+	sf::Texture textureMerchant;
+	sf::Texture textureLoading;
 
 	//Gameobjects
 	Player player;
@@ -106,8 +108,8 @@ private:
 
 	// Npc
 	Npc activeNpc;
-	vector<Npc> npcArray = { Npc(), Npc() };
-	vector<sf::Texture> npcTexture = { sf::Texture(), sf::Texture() };
+	vector<Npc> npcArray = { Npc(), Npc(), Npc(), Npc() };
+	vector<sf::Texture> npcTexture = { sf::Texture(), sf::Texture(), sf::Texture(), sf::Texture() };
 
 	//connect with menu
 	bool* isPlaying;
@@ -115,4 +117,6 @@ private:
 	void enemySetup();
 	void npcSetup();
 	void renderLoading();
+
+	int enemyKilled = 0;
 };
