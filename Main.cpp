@@ -26,6 +26,15 @@ int main() {
 	logoSprite.setTexture(logoTexture);
 	logoSprite.setScale({ 0.15, 0.15 });
 	logoSprite.setPosition(window.getSize().x / 2 - logoTexture.getSize().x / 2 * 0.15, window.getSize().y / 4 - logoTexture.getSize().y / 2 * 0.15);
+	
+	sf::Texture bgTexture;
+	if (!bgTexture.loadFromFile("res/img/bg.png")) {
+		std::cout << "bg.png picture not loaded." << std::endl;
+	}
+	sf::Sprite bgSprite;
+	bgSprite.setTexture(bgTexture);
+	bgSprite.setScale({ 0.8, 1 });
+	//bgSprite.setPosition(window.getSize().x / 2 - bgTexture.getSize().x / 2, window.getSize().y / 4 - bgTexture.getSize().y / 2);
 
 	sf::Texture starTexture;
 	if (!starTexture.loadFromFile("res/img/stars.png")) {
@@ -51,7 +60,6 @@ int main() {
 	// Extract save files
 	std::map<int, std::string> score;
 	std::ifstream fileReader;
-	fileReader.open("save/score.txt");
 
 	std::string word;
 
@@ -74,6 +82,7 @@ int main() {
 			}
 			starSpriteAnimation++;
 			if (state == 0) {
+				window.draw(bgSprite);
 				window.draw(starSprite);
 				window.draw(logoSprite);
 				for (int button = 0; button < 3; button++) {
@@ -89,18 +98,21 @@ int main() {
 				}
 			}
 			if (state == 1) {
+				window.draw(bgSprite);
 				window.draw(starSprite);
 				window.draw(logoSprite);
 				sf::Text text("Enter to go back", font);
 				text.setCharacterSize(30);
 				text.setFillColor(sf::Color::White);
 
+				fileReader.open("save/score.txt");
 				do {
 					fileReader >> word;
 					auto first_token = word.substr(0, word.find(','));
 					auto second_token = std::stoi(word.substr(word.find(',') + 1, word.length()));
 					score[second_token] = first_token;
 				} while (fileReader.good());
+				fileReader.close();
 
 				std::map<int, std::string>::iterator end = score.end();
 				std::map<int, std::string>::iterator beg = score.begin();
@@ -125,9 +137,13 @@ int main() {
 				window.draw(text);
 			}
 			if (state == 2) {
+				window.draw(bgSprite);
 				window.draw(starSprite);
 				window.draw(logoSprite);
 				sf::Text text("", font);
+				text.setString("Score: " + to_string(playingScore));
+				text.setPosition(350, 350);
+				window.draw(text);
 				text.setString("Enter your name: ");
 				text.setPosition(350, 400);
 				window.draw(text);

@@ -66,7 +66,8 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 		cout << "res/music/Theme.ogg not loaded." << endl;
 	}
 	music.setLoop(true);
-	//music.play();
+	music.setVolume(40);
+	music.play();
 
 	if (!textureEnvironment.loadFromFile("res/img/environment.png")) {
 		cout << "res/img/environment.png not loaded." << endl;
@@ -99,6 +100,22 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 	if (!textureLoading.loadFromFile("res/img/loading.png")) {
 		cout << "res/img/loading.png not loaded." << endl;
 	}
+
+	if (!textureShader.loadFromFile("res/img/shader.png")) {
+		cout << "res/img/shader.png not loaded." << endl;
+	}
+
+	if (!textureBlood.loadFromFile("res/img/blood_splatter.png")) {
+		cout << "res/img/blood_splatter.png not loaded." << endl;
+	}
+
+	shaderSprite.setTexture(textureShader);
+	//shaderSprite.setScale({ 1.35f, 1.267f });
+	shaderSprite.setOrigin(textureShader.getSize().x / 2, textureShader.getSize().y / 2);
+	
+	bloodSprite.setTexture(textureBlood);
+	//shaderSprite.setScale({ 1.35f, 1.267f });
+	bloodSprite.setOrigin(textureBlood.getSize().x / 2, textureBlood.getSize().y / 2);
 
 	player.sprite.setTexture(texturePlayer);
 	stand.sprite.setTexture(textureStand);
@@ -340,16 +357,16 @@ void Game::generateGameObjects() {
 
 	for (int x = 0, curObs = 0; x < 65 && curObs < 100; x++) {
 		for (int y = 0; y < 65; y++) {
-			bool gen = generateRandom(10) > 7;
+			bool gen = generateRandom(10) > 6;
 			if (gen && heightToTile(world._Matrix[y][x]) == 1) {
 				curObs++;
 				int gObs = generateRandom(10);
-				if (gObs > 4) {
+				if (gObs > 5) {
 					tree.rect.setPosition(x * 64 + 32, y * 64 + 32);
 					tree.sprite.setPosition(x * 64, y * 64);
 					wallArray.push_back(tree);
 				}
-				else if (gObs == 4) {
+				else if (gObs == 5) {
 					poisonBush.rect.setPosition(x * 64, y * 64);
 					poisonBush.sprite.setPosition(x * 64, y * 64);
 					wallArray.push_back(poisonBush);
@@ -760,6 +777,13 @@ void Game::render() {
 		//window->draw(wIt->rect);
 	}
 
+	//if (isUsingStand) {
+	//	window->draw(shaderSprite);
+	//}
+	if (player.hp < 5) {
+		window->draw(bloodSprite);
+	}
+
 	//drawing current stage
 	currentStageShow.setString("Current stage: " + to_string(currentStage));
 	currentStageShow.setPosition(player.rect.getPosition().x + window->getSize().x / 2 - 300, player.rect.getPosition().y - window->getSize().y / 2);
@@ -833,21 +857,21 @@ void Game::inputProcess() {
 		}
 	}
 
-	sf::Time dialogTime = dialogClock.getElapsedTime();
+	/*sf::Time dialogTime = dialogClock.getElapsedTime();
 	if (dialogTime.asSeconds() >= .2f) {
 		dialogClock.restart();
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && dialogBox.isShow) {
 			dialogBox.update();
 		}
-	}
+	}*/
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 		window->close();
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
 		remap();
-	}
+	}*/
 
 	sf::Event event;
 	while (window->pollEvent(event)) {
@@ -969,6 +993,9 @@ void Game::update() {
 	itemRelated();
 	enemyRelated();
 	playerAttack();
+
+	shaderSprite.setPosition(player.rect.getPosition());
+	bloodSprite.setPosition(player.rect.getPosition());
 }
 
 void Game::collisionRelated() {
@@ -1157,10 +1184,10 @@ void Game::playerAttack() {
 				stand.updateMovement(true);
 				soundShot.play();
 				projectile.rect.setPosition(
-					stand.rect.getPosition().x + stand.rect.getSize().x / 2 - projectile.rect.getSize().x / 2,
-					stand.rect.getPosition().y + stand.rect.getSize().y / 2 - projectile.rect.getSize().y / 2
+					player.rect.getPosition().x + player.rect.getSize().x / 2 - projectile.rect.getSize().x / 2,
+					player.rect.getPosition().y + player.rect.getSize().y / 2 - projectile.rect.getSize().y / 2
 				);
-				projectile.direction = stand.direction;
+				projectile.direction = player.direction;
 				projectileArray.push_back(projectile);
 			}
 		}
@@ -1188,7 +1215,6 @@ void Game::itemRelated() {
 				sf::Time inShopTimer = shopClock.getElapsedTime();
 				if (inShopTimer.asSeconds() >= 0.5f) {
 					shopClock.restart();
-					cout << "in shop!" << endl;
 					if (piIt->isPowerUp && player.coin >= piIt->cost
 						&& sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
 						player.coin -= piIt->cost;

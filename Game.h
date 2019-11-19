@@ -40,7 +40,7 @@ public:
 	sf::RenderWindow *window;
 	int* state;
 	int* playingScore = 0;
-	int currentStage = 4;
+	int currentStage = 1;
 
 private:
 	sf::Clock attackClock, enemyAttackPlayerClock, 
@@ -70,6 +70,11 @@ private:
 	sf::Texture textureFireball;
 	sf::Texture textureMerchant;
 	sf::Texture textureLoading;
+	sf::Texture textureShader;
+	sf::Texture textureBlood;
+
+	sf::Sprite shaderSprite;
+	sf::Sprite bloodSprite;
 
 	//Gameobjects
 	Player player;

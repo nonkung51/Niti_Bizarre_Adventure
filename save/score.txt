@@ -1,2 +1,9 @@
 Pom,0
 makids,32500
+Pure,17500
+KUY,1000
+Pure,40500
+jojo,2000
+test,2300
+jonathan,1000
+ nml;',42500
