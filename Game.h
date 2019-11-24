@@ -72,9 +72,12 @@ private:
 	sf::Texture textureLoading;
 	sf::Texture textureShader;
 	sf::Texture textureBlood;
+	sf::Texture texturePotion;
+	sf::Texture texturePause;
 
 	sf::Sprite shaderSprite;
 	sf::Sprite bloodSprite;
+	sf::Sprite pauseSprite;
 
 	//Gameobjects
 	Player player;
@@ -118,6 +121,8 @@ private:
 
 	//connect with menu
 	bool* isPlaying;
+
+	bool isPause = false;
 
 	void enemySetup();
 	void npcSetup();

@@ -49,10 +49,10 @@ void Enemy::updateMovement(bool isAttack) {
 			rect.move({ movementSpeed, 0.0f });
 			sprite.setTextureRect(sf::IntRect(spriteSizeX * counterWalking, spriteSizeY * 11, spriteSizeX, spriteSizeY));
 		}
-		else {
+		/*else {
 			sprite.setTextureRect(sf::IntRect(spriteSizeX * (counterIdle % 6), 20 * spriteSizeY, spriteSizeX, spriteSizeY));
 			// No movement
-		}
+		}*/
 		counterWalking++;
 		if (counterWalking == 9) {
 			counterWalking = 0;

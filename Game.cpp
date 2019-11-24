@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "DialogBox.h"
 #include <iostream>
+#include <math.h>
 
 int heightToTile(int h) {
 	//mountain
@@ -77,6 +78,10 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 		cout << "res/img/player.png not loaded." << endl;
 	}
 
+	if (!texturePotion.loadFromFile("res/img/potion.png")) {
+		cout << "res/img/potion.png not loaded." << endl;
+	}
+
 	if (!textureStand.loadFromFile("res/img/stand.png")) {
 		cout << "res/img/stand.png not loaded." << endl;
 	}
@@ -109,6 +114,10 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 		cout << "res/img/blood_splatter.png not loaded." << endl;
 	}
 
+	if (!texturePause.loadFromFile("res/img/pause.png")) {
+		cout << "res/img/pause.png not loaded." << endl;
+	}
+
 	shaderSprite.setTexture(textureShader);
 	//shaderSprite.setScale({ 1.35f, 1.267f });
 	shaderSprite.setOrigin(textureShader.getSize().x / 2, textureShader.getSize().y / 2);
@@ -116,6 +125,10 @@ Game::Game(sf::RenderWindow* w, bool* playing, int* score, int* st) : view(sf::F
 	bloodSprite.setTexture(textureBlood);
 	//shaderSprite.setScale({ 1.35f, 1.267f });
 	bloodSprite.setOrigin(textureBlood.getSize().x / 2, textureBlood.getSize().y / 2);
+	
+	pauseSprite.setTexture(texturePause);
+	//shaderSprite.setScale({ 1.35f, 1.267f });
+	pauseSprite.setOrigin(texturePause.getSize().x / 2, texturePause.getSize().y / 2);
 
 	player.sprite.setTexture(texturePlayer);
 	stand.sprite.setTexture(textureStand);
@@ -341,15 +354,18 @@ void Game::generateMap() {
 
 void Game::generateGameObjects() {
 	Wall tree;
+	tree.destructable = true;
 	tree.rect.setSize(sf::Vector2f(64, 96));
 	tree.sprite.setTexture(tiles);
 	tree.sprite.setTextureRect(sf::IntRect(6 * 16, 5 * 16, 32, 32));
 	tree.sprite.setScale(sf::Vector2f(4.f, 4.f));
 	Wall boulder;
+	boulder.destructable = true;
 	boulder.sprite.setTexture(tiles);
 	boulder.sprite.setTextureRect(sf::IntRect(9 * 16, 5 * 16, 16, 16));
 	boulder.sprite.setScale(sf::Vector2f(4.f, 4.f));
 	Wall poisonBush;
+	poisonBush.destructable = true;
 	poisonBush.sprite.setTexture(tiles);
 	poisonBush.sprite.setTextureRect(sf::IntRect(10 * 16, 7 * 16, 16, 16));
 	poisonBush.sprite.setScale(sf::Vector2f(4.f, 4.f));
@@ -398,7 +414,7 @@ void Game::generateGameObjects() {
 	int enemyX;
 	int enemyY;
 	//gen enemy
-	for (int i = 0; i < currentStage * 10; i++) {
+	for (int i = 0; i < currentStage * 6; i++) {
 		bool flagEnemy = true;
 		while (flagEnemy) {
 			enemyX = generateRandom0(65);
@@ -410,13 +426,14 @@ void Game::generateGameObjects() {
 		}
 		int type = generateRandom0(currentStage); //generate monster according to current stage
 		enemyType[type].rect.setPosition(enemyX * 64, enemyY * 64);
+		enemyType[type].direction = generateRandom0(4);
 		enemyArray.push_back(enemyType[type]);
 	}
 
 	int stepLength = 1, step = 0;
 	int bossX = playerX;
 	int bossY = playerY;
-	while (distance(playerX, playerY, bossX, bossY) < 25.f && step < 1500) {
+	while (distance(playerX, playerY, bossX, bossY) < 25.f) {
 		int di = generateRandom(4);
 		if (di == 1 && bossY > 0) {
 			bossY -= stepLength;
@@ -430,7 +447,7 @@ void Game::generateGameObjects() {
 		else if (di == 4 && bossX < 65) {
 			bossX += stepLength;
 		}
-		activeNpc.rect.setPosition(bossX * 64, bossY * 64);
+		activeNpc.rect.setPosition(bossX * 64.5, bossY * 64.5);
 		for (vector<Wall>::iterator wIt = wallArray.begin(); wIt != wallArray.end(); wIt++) {
 			int bounce[4][2] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
 			if (activeNpc.rect.getGlobalBounds().intersects(wIt->rect.getGlobalBounds())) {
@@ -451,6 +468,7 @@ void Game::generateGameObjects() {
 	pickup.isPowerUp = true;
 	pickup.rect.setSize(sf::Vector2f(64, 64));
 	pickup.sprite.setTexture(textureMerchant);
+	pickup.sprite.setScale({ 1,1 });
 	pickup.sprite.setTextureRect(sf::IntRect(0, 128, 64, 64));
 	/* set shop position */
 	stepLength = 1, step = 0;
@@ -558,7 +576,7 @@ void Game::remap() {
 	view.setCenter(sf::Vector2f(view.getSize().x / 2, view.getSize().y / 2));
 	window->setView(view);
 	sf::Sprite loadingSprite;
-	loadingSprite.setPosition(10, 600);
+	loadingSprite.setPosition(10, 900);
 	loadingSprite.setTexture(textureLoading);
 	loadingSprite.setScale({ 0.3,0.3 });
 	window->draw(loadingSprite);
@@ -742,29 +760,36 @@ void Game::render() {
 	if (isUsingStand) {
 		window->draw(stand.sprite);
 	}
+	if (isPause) {
+		window->draw(pauseSprite);
+	}
 	window->draw(player.sprite);
 	window->draw(activeNpc.sprite);
 
 	// Draw Pickup item
 	for (vector<Pickup>::iterator piIt = pickupArray.begin(); piIt != pickupArray.end(); piIt++) {
+		if (!isPause && !dialogBox.isShow) {
+
 		piIt->update();
-		window->draw(piIt->sprite);
-		if (piIt->inShop) {
-			window->draw(piIt->text);
 		}
+		window->draw(piIt->sprite);
 	}
 
 	//Update Bullet
 	for (vector<Projectile>::iterator pIt = projectileArray.begin(); pIt != projectileArray.end(); pIt++) {
-		pIt->update();
+		if (!isPause && !dialogBox.isShow) {
+			pIt->update();
+		}
 		//window->draw(pIt->sprite);
 		//window->draw(pIt->rect);
 	}
 
 	//Update Enemy
 	for (vector<Enemy>::iterator eIt = enemyArray.begin(); eIt != enemyArray.end(); eIt++) {
-		eIt->update();
-		eIt->updateMovement(false);
+		if (!isPause && !dialogBox.isShow) {
+			eIt->update();
+			eIt->updateMovement(false);
+		}
 		if (eIt->isAggressive) {
 			window->draw(eIt->text);
 		}
@@ -777,12 +802,9 @@ void Game::render() {
 		//window->draw(wIt->rect);
 	}
 
-	//if (isUsingStand) {
-	//	window->draw(shaderSprite);
-	//}
-	if (player.hp < 5) {
-		window->draw(bloodSprite);
-	}
+	bloodSprite.setColor(sf::Color(255, 255, 255, floor(255.f - player.hp * 1.f / player.maxHp * 1.f * 255.f) ));
+	window->draw(bloodSprite);
+	
 
 	//drawing current stage
 	currentStageShow.setString("Current stage: " + to_string(currentStage));
@@ -805,22 +827,30 @@ void Game::render() {
 
 	if (!dialogBox.isShow) {
 		if (!isUsingStand) {
-			player.updateMovement(false);
-			player.update();
+			if (!isPause) {
+				player.updateMovement(false);
+				player.update();
+			}
 		}
 		else {
-			player.updateMovement(false);
-			player.update();
+			if (!isPause) {
+				player.updateMovement(false);
+				player.update();
+			}
 			window->draw(stand.sprite);
-			stand.updateMovement(false);
-			stand.update();
+			if (!isPause) {
+				stand.updateMovement(false);
+				stand.update();
+			}
 		}
 	}
 
 	// Draw damage effect
 	for (vector<TextDisplay>::iterator tIt = textDisplayArray.begin(); tIt != textDisplayArray.end(); tIt++) {
-		tIt->update();
-		window->draw(tIt->text);
+		if (!isPause && !dialogBox.isShow) {
+			tIt->update();
+			window->draw(tIt->text);
+		}
 	}
 
 	dialogBox.box.setPosition(player.rect.getPosition().x - window->getSize().x / 2, player.rect.getPosition().y + window->getSize().y / 6);
@@ -845,17 +875,7 @@ void Game::render() {
 }
 
 void Game::inputProcess() {
-	sf::Time usingStandTime = switchStandClock.getElapsedTime();
-	if (usingStandTime.asSeconds() >= 0.2f) {
-		switchStandClock.restart();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-			if (!isUsingStand) {
-				yareYare.play();
-			}
-			stand.rect.setPosition(player.rect.getPosition());
-			isUsingStand = !isUsingStand;
-		}
-	}
+	
 
 	/*sf::Time dialogTime = dialogClock.getElapsedTime();
 	if (dialogTime.asSeconds() >= .2f) {
@@ -864,10 +884,6 @@ void Game::inputProcess() {
 			dialogBox.update();
 		}
 	}*/
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-		window->close();
-	}
 
 	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
 		remap();
@@ -880,13 +896,36 @@ void Game::inputProcess() {
 		case sf::Event::Closed:
 			window->close();
 			break;
+		case sf::Event::KeyReleased:
+			if (event.key.code == 15) {
+				isPause = !isPause;
+			}
 		case sf::Event::KeyPressed:
 			if (event.key.code == 12) { //M
 				cout << "Boss: " << activeNpc.rect.getPosition().x / 64 << " " << activeNpc.rect.getPosition().y / 64 << endl;
 			}
-			if (dialogBox.isShow && event.key.code == 5) {
+			else if (dialogBox.isShow && event.key.code == 5) {
 				sf::sleep(sf::seconds(.1f));
 				dialogBox.update();
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && isPause) {
+				remap();
+				currentStage = 1;
+				*isPlaying = false;
+				*state = 0;
+			}
+			if (!isPause) {
+				sf::Time usingStandTime = switchStandClock.getElapsedTime();
+				if (usingStandTime.asSeconds() >= 0.2f) {
+					switchStandClock.restart();
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+						if (!isUsingStand) {
+							yareYare.play();
+						}
+						stand.rect.setPosition(player.rect.getPosition());
+						isUsingStand = !isUsingStand;
+					}
+				}
 			}
 			break;
 		default:
@@ -916,6 +955,7 @@ void Game::clearJunk() {
 				pickup.isPowerUp = false;
 				pickup.sprite.setTexture(textureCoin);
 				pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
+				pickup.sprite.setScale({ 1, 1 });
 				pickup.rect.setPosition(eIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
@@ -925,7 +965,8 @@ void Game::clearJunk() {
 				pickup.isPowerUp = true;
 				pickup.isCoin = false;
 				pickup.sprite.setTexture(textureCoin);
-				pickup.sprite.setTextureRect(sf::IntRect(24 * 1.2, 24 * 6.8, 24, 24));
+				pickup.sprite.setTextureRect(sf::IntRect(0, 0, 384, 384));
+				pickup.sprite.setScale({ 64.f / 384.f, 64.f / 384.f });
 				pickup.rect.setPosition(eIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
@@ -968,6 +1009,7 @@ void Game::clearJunk() {
 				pickup.isPowerUp = false;
 				pickup.sprite.setTexture(textureCoin);
 				pickup.sprite.setTextureRect(sf::IntRect(24 * 6.8, 24 * 5.5, 24, 24));
+				pickup.sprite.setScale({ 1, 1 });
 				pickup.rect.setPosition(wIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
@@ -976,8 +1018,9 @@ void Game::clearJunk() {
 				pickup.inShop = false;
 				pickup.isPowerUp = true;
 				pickup.isCoin = false;
-				pickup.sprite.setTexture(textureCoin);
-				pickup.sprite.setTextureRect(sf::IntRect(24 * 1.2, 24 * 6.8, 24, 24));
+				pickup.sprite.setTexture(texturePotion);
+				pickup.sprite.setTextureRect(sf::IntRect(0, 0, 384, 384));
+				pickup.sprite.setScale({64.f / 384.f, 64.f / 384.f});
 				pickup.rect.setPosition(wIt->rect.getPosition());
 				pickupArray.push_back(pickup);
 			}
@@ -996,6 +1039,7 @@ void Game::update() {
 
 	shaderSprite.setPosition(player.rect.getPosition());
 	bloodSprite.setPosition(player.rect.getPosition());
+	pauseSprite.setPosition(player.rect.getPosition());
 }
 
 void Game::collisionRelated() {
@@ -1066,6 +1110,7 @@ void Game::enemyRelated() {
 				textDisplayArray.push_back(textDisplay);
 				if (player.hp <= 0) {
 					remap();
+					currentStage = 1;
 					*playingScore += player.coin * 10;
 					*isPlaying = false;
 					*state = 2;

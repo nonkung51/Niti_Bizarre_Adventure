@@ -11,10 +11,10 @@ using namespace std;
 
 int main() {
 	int activeButton = 0;
-	int state = 0;
+	int state = 2;
 	int playingScore = 0;
 	bool isPlaying = false;
-	sf::RenderWindow window(sf::VideoMode(1080, 760), "Niti Bizarre Adventure");
+	sf::RenderWindow window(sf::VideoMode(1960, 1080), "Niti Bizarre Adventure", sf::Style::Fullscreen);
 	Game game(&window, &isPlaying, &playingScore, &state);
 	window.setFramerateLimit(60);
 
@@ -24,8 +24,8 @@ int main() {
 	}
 	sf::Sprite logoSprite;
 	logoSprite.setTexture(logoTexture);
-	logoSprite.setScale({ 0.15, 0.15 });
-	logoSprite.setPosition(window.getSize().x / 2 - logoTexture.getSize().x / 2 * 0.15, window.getSize().y / 4 - logoTexture.getSize().y / 2 * 0.15);
+	logoSprite.setScale({ 0.2, 0.2 });
+	logoSprite.setPosition(600, 75);
 	
 	sf::Texture bgTexture;
 	if (!bgTexture.loadFromFile("res/img/bg.png")) {
@@ -33,7 +33,7 @@ int main() {
 	}
 	sf::Sprite bgSprite;
 	bgSprite.setTexture(bgTexture);
-	bgSprite.setScale({ 0.8, 1 });
+	bgSprite.setScale({ 1.5, 1.5 });
 	//bgSprite.setPosition(window.getSize().x / 2 - bgTexture.getSize().x / 2, window.getSize().y / 4 - bgTexture.getSize().y / 2);
 
 	sf::Texture starTexture;
@@ -42,7 +42,7 @@ int main() {
 	}
 	sf::Sprite starSprite;
 	starSprite.setTexture(starTexture);
-	starSprite.setScale({0.8, 0.95});
+	starSprite.setScale({1.6, 1.6});
 	//starSprite.setPosition(window.getSize().x / 2 - logoTexture.getSize().x / 2 * 0.15, window.getSize().y / 4 - logoTexture.getSize().y / 2 * 0.15);
 
 
@@ -52,6 +52,10 @@ int main() {
 	if (!font.loadFromFile("res/font/manaspc.ttf")) {
 		std::cout << "Can\'t load font" << std::endl;
 	}
+
+	sf::Text myname("62010452 Nonthakon Jitchiranant", font);
+	myname.setFillColor(sf::Color::Yellow);
+	myname.setPosition({1300, 1000});
 
 	//Output player score
 	std::ofstream fileWriter;
@@ -67,15 +71,17 @@ int main() {
 
 	while (window.isOpen()) {
 		if (!isPlaying) {
-			window.setView(sf::View({ 1080/2,720/2 }, { 1080, 720 }));
+			window.setView(sf::View({ 1960/2,1080 /2 }, { 1960, 1080 }));
 			window.clear(sf::Color(168, 109, 171));
 			if (starSpriteAnimation <= 10) {
 				starSprite.move({ 1, -1 });
 				logoSprite.move({ -0.5, 0.5 });
+				myname.move({ 0, 0.5 });
 			}
 			else {
 				starSprite.move({ -1, 1 });
 				logoSprite.move({ 0.5, -0.5 });
+				myname.move({ 0, -0.5 });
 				if (starSpriteAnimation == 20) {
 					starSpriteAnimation = 0;
 				}
@@ -85,6 +91,7 @@ int main() {
 				window.draw(bgSprite);
 				window.draw(starSprite);
 				window.draw(logoSprite);
+				window.draw(myname);
 				for (int button = 0; button < 3; button++) {
 					sf::Text text(buttonText.at(button), font);
 					text.setCharacterSize(30);
@@ -93,7 +100,7 @@ int main() {
 						text.setStyle(sf::Text::Bold);
 						text.setFillColor(sf::Color::Red);
 					}
-					text.setPosition(250 + 300 * button, 500);
+					text.setPosition(550 + 300 * button, 800);
 					window.draw(text);
 				}
 			}
@@ -101,6 +108,7 @@ int main() {
 				window.draw(bgSprite);
 				window.draw(starSprite);
 				window.draw(logoSprite);
+				window.draw(myname);
 				sf::Text text("Enter to go back", font);
 				text.setCharacterSize(30);
 				text.setFillColor(sf::Color::White);
@@ -121,10 +129,10 @@ int main() {
 				int currentDisplay = 0;
 				for (std::map<int, std::string>::iterator it = end; it != beg; it--) {
 					text.setString(it->second);
-					text.setPosition(350, 400 + 40 * currentDisplay);
+					text.setPosition(800, 700 + 40 * currentDisplay);
 					window.draw(text);
 					text.setString(std::to_string(it->first));
-					text.setPosition(700, 400 + 40 * currentDisplay);
+					text.setPosition(1400, 700 + 40 * currentDisplay);
 					window.draw(text);
 					currentDisplay++;
 					if (currentDisplay == 5) {
@@ -133,25 +141,26 @@ int main() {
 				}
 				currentDisplay = 0;
 				text.setString("Enter to go back");
-				text.setPosition(350, 650);
+				text.setPosition(800, 960);
 				window.draw(text);
 			}
 			if (state == 2) {
 				window.draw(bgSprite);
 				window.draw(starSprite);
 				window.draw(logoSprite);
+				window.draw(myname);
 				sf::Text text("", font);
 				text.setString("Score: " + to_string(playingScore));
-				text.setPosition(350, 350);
+				text.setPosition(700, 500);
 				window.draw(text);
 				text.setString("Enter your name: ");
-				text.setPosition(350, 400);
+				text.setPosition(700, 650);
 				window.draw(text);
 				text.setString(playerInput);
-				text.setPosition(600, 450);
+				text.setPosition(800, 750);
 				window.draw(text);
 				text.setString("Press enter to save");
-				text.setPosition(450, 600);
+				text.setPosition(900, 950);
 				window.draw(text);
 			}
 
@@ -205,7 +214,11 @@ int main() {
 					}
 					if (event.text.unicode == 8) { //backspace
 						playerInput = playerInput.substring(0, playerInput.getSize() - 1);
-					} else {
+					}
+					else if (event.text.unicode == 32) {
+						playerInput += '_';
+					}
+					else {
 						playerInput += event.text.unicode;
 					}
 				}
